@@ -146,3 +146,15 @@ import process from "node:process";
 // }
 
 // console.log("hello", process.argv[2]);
+
+// Exercise 5 (Hard)
+// Build a tiny calculator. -> node app.js add 10 20 output : 30 | node app.js subtract 50 20 output : 30
+// if (process.argv[2] === "add") {
+//   const result = Number(process.argv[3]) + Number(process.argv[4]);
+//   console.log(result);
+// }
+
+// if (process.argv[2] === "subtract") {
+//   const result = Number(process.argv[3]) - Number(process.argv[4]);
+//   console.log(result);
+// }
