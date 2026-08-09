@@ -158,3 +158,30 @@ import process from "node:process";
 //   const result = Number(process.argv[3]) - Number(process.argv[4]);
 //   console.log(result);
 // }
+
+// Mini Project
+
+// Create a simple CLI greeting app:
+
+const makeUppercase = process.argv.includes("--uppercase");
+
+const argumentsOnly = process.argv
+  .slice(2)
+  .filter((arg) => arg !== "--uppercase");
+
+const name = argumentsOnly[0];
+
+if (name) {
+  let greet = `Hello ${process.argv[2]} 👋`;
+  let message = "Today is a great day to learn Node.js.";
+
+  if (makeUppercase) {
+    greet = greet.toUpperCase();
+    message = message.toUpperCase();
+  }
+
+  console.log(greet);
+  console.log(message);
+} else {
+  console.log("Please provide a name!");
+}
