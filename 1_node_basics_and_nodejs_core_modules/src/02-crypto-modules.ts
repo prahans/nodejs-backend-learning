@@ -21,3 +21,8 @@ console.log("requestId : ", requestId);
 // 32 char string
 const restToken = crypto.randomBytes(16).toString("hex");
 console.log("resetToken : ", restToken);
+
+// No, you cannot convert a hash back into the original text. Hashing is a one-way mathematical process. It scrambles your text into a fixed code, but it throws away information so the step cannot go backward
+const text = "hello node";
+const hash = crypto.createHash("sha256").update(text).digest("hex");
+console.log("hash : ", hash);
