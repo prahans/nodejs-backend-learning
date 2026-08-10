@@ -1012,3 +1012,33 @@ Outputs completely unstructured raw cryptographic entropy translated into a stra
 | **Password Reset URL Tokens**          |       ❌       |       ✅        |
 | **Merchant API Keys / Client Secrets** |       ❌       |       ✅        |
 | **HMAC Secret Signature Keys**         |       ❌       |       ✅        |
+
+## Common Developer Mistakes
+
+- ❌ **Mistake 1: Using UUIDs as password reset tokens.** While UUIDs are excellent unique identifiers, they are not structural replacements for general cryptographic security tokens. For sensitive authorization overrides like password resets, stick to maximum entropy allocations using `crypto.randomBytes()`.
+- ❌ **Mistake 2: Attempting to "decode" or parse a UUID for data.** A UUID version 4 is a randomly structured layout of bits serving as an identifier. It does not contain hidden or encrypted metadata payloads (like user information or creation timestamps) that you can reverse-engineer.
+- ❌ **Mistake 3: Treating a UUID as a hidden secret.** A UUID is designed to be globally unique and exceptionally difficult to guess from the outside, but it is **not a secret**. It will frequently be exposed in frontend URLs, router logs, and database headers. Never use a standard UUID as a replacement for an API secret or user password.
+
+---
+
+## Interview Questions & Answers
+
+#### 1. What does UUID stand for?
+
+Universally Unique Identifier.
+
+#### 2. Why use UUIDs instead of traditional database auto-incrementing integer IDs?
+
+Auto-incrementing IDs are entirely sequential, making them vulnerable to trivial resource enumeration attacks where an attacker scrapes database records by guessing continuous numbers. Furthermore, sequential IDs require a single centralized database authority to increment the counter, whereas UUIDs can be safely generated independently across separate sharded servers or microservices without any coordination.
+
+#### 3. Is a UUID encrypted?
+
+No. It does not hide data or mask plaintext information. It is simply a structured format for displaying unique random binary blocks as string entities.
+
+#### 4. Can two randomly generated UUIDs ever collision-match?
+
+Theoretically, yes. Practically, no. The mathematical probability of generating a duplicate version 4 random UUID is so incredibly microscopic that it is universally treated as mathematically impossible in real-world application architectures.
+
+#### 5. What is the fundamental difference between `randomUUID()` and `randomBytes()`?
+
+`crypto.randomUUID()` generates data engineered exclusively to match the canonical 36-character hyphenated UUID layout, purpose-built for entity and database row identification. `crypto.randomBytes()` generates variable-length raw binary blocks designed to act as high-entropy cryptographic secrets, API keys, and session authenticators.
