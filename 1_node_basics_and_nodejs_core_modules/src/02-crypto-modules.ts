@@ -83,5 +83,37 @@ function hash(password: string): string {
   return crypto.createHash("sha256").update(password).digest("hex");
 }
 
-console.log(hash("apple"));
-console.log(hash("apple"));
+// console.log(hash("apple")); // 3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b
+// console.log(hash("apple")); // 3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b
+// Question: Are they identical? -> Yes
+
+// Experiment 2
+// console.log(hash("apple")); // 3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b
+
+// console.log(hash("Apple")); // f223faa96f22916294922b171a2696d868fd1f9129302eb41a45b2a2ea2ebbfd
+// Question: How different are the outputs? -> very different
+
+// Experiment 3
+// console.log(hash("apple")); // 3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b
+
+// console.log(hash(" apple")); // (with a trailing space) // 881cda2d83a43428d31e5f25126d200626f7fd2a877247d9359aed05a8d954a6
+// Question: Can you spot why the hashes differ? -> Yes even space count
+
+// Experiment 4
+// Hash a long paragraph.
+// Then change one punctuation mark.
+// Observe how dramatically the hash changes.
+// console.log(hash("hello world lets learn node js .")); // 97045097e892eb62ef5ba82784b467f047733b402c2daa145cbc4644f52c4e70
+
+// console.log(hash("hello world lets learn node js ?")); // 9251208ecb40f733f4dc1a0fdc0c949bde5181073f82f4d7eed69bbf810e6fc5
+
+console.log(hash(process.argv[2]));
+
+const password = hash("helloWorld");
+
+function compareHash(password: string, storededhash: string) {
+  const hashValue = hash(password);
+  return hashValue === storededhash;
+}
+
+console.log(compareHash(process.argv[2], password));
