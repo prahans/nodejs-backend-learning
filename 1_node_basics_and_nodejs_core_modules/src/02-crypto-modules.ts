@@ -74,3 +74,14 @@ import crypto from "node:crypto";
 // }
 
 // console.log(generateToken(16));
+
+// HASH
+
+// Experiment 1
+// Hash the same string twice.
+function hash(password: string): string {
+  return crypto.createHash("sha256").update(password).digest("hex");
+}
+
+console.log(hash("apple"));
+console.log(hash("apple"));
