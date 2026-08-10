@@ -688,3 +688,47 @@ Because the attacker does not have access to your hidden `Secret Key`, they are 
 - [x] It relies on a **shared secret key** known only to the sender and receiver.
 - [x] Webhook APIs (Stripe, GitHub, PayPal) rely extensively on HMAC signatures.
 - [x] Changing either the message data or the secret key yields a radically different signature string.
+
+## Common Developer Mistakes
+
+- ❌ **Mistake 1: Believing HMAC encrypts data.** It does not mask or obscure your data payloads. The message content itself travels in plaintext and remains completely readable. HMAC is strictly used to prove authentication and message data integrity.
+- ❌ **Mistake 2: Sharing or leaking the secret key publicly.** The entire security model of an HMAC relies on keeping the secret key private between the sender and receiver. If an attacker accesses the secret, they can forge signatures effortlessly.
+- ❌ **Mistake 3: Comparing signatures using standard equality operators.** Using a typical string equality check (`===`) exposes your code to **timing attacks** because JavaScript string comparisons return `false` as soon as they find the first non-matching character. Secure backend applications use `crypto.timingSafeEqual()` to ensure comparisons take a constant amount of time regardless of where a mismatch occurs.
+
+---
+
+## Interview Questions & Answers
+
+#### 1. What is HMAC?
+
+A Hash-based Message Authentication Code that combines a cryptographic hash algorithm with a secret key to ensure data has not been modified and originates from a trusted party.
+
+#### 2. Why use HMAC instead of a normal hash?
+
+A standard hash only verifies data integrity (that the file hasn't changed). It cannot prove origin authenticity because anyone can calculate a public hash. An HMAC ensures both integrity and origin authenticity by requiring a secret key.
+
+#### 3. Can someone generate a valid HMAC without knowing the secret?
+
+No. Without the secret key, it is computationally impossible to guess or construct a valid corresponding signature string.
+
+#### 4. Where is HMAC commonly used?
+
+- Payment gateways (e.g., Stripe, PayPal webhooks)
+- Developer platforms (e.g., GitHub, Slack webhooks)
+- API Request Signing schemes (e.g., AWS IAM authorization headers)
+- Tamper-proof session storage tokens
+
+#### 5. Does HMAC encrypt data?
+
+No. HMAC provides authenticity and tamper-proofing, not confidentiality. The underlying data payload remains completely open and human-readable.
+
+---
+
+## Structural Comparison: Hash vs. HMAC
+
+| Feature                | Hash                                                                      | HMAC                                                                   |
+| :--------------------- | :------------------------------------------------------------------------ | :--------------------------------------------------------------------- |
+| **Input Dependencies** | Uses only the data payload.                                               | Uses the data payload **and** a private secret key.                    |
+| **Computability**      | Anyone can compute it at any time.                                        | Only a party holding the correct secret key can compute it.            |
+| **Core Utility**       | Ideal for basic **integrity checks**.                                     | Ideal for both **authenticity** and **integrity** checks.              |
+| **Real-World Example** | Verifying a downloaded Linux `.iso` or checking a Git commit file change. | Verifying a critical incoming webhook signature from Stripe or GitHub. |
