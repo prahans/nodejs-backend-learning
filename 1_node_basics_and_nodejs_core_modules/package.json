@@ -16,7 +16,8 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "01": "tsx src/01-process-object.ts"
+    "01": "tsx src/01-process-object.ts",
+    "02": "tsx src/02-crypto-modules.ts"
   },
   "devDependencies": {
     "@types/node": "^26.1.2",
