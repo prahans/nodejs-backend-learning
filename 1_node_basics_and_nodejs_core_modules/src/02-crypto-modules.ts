@@ -130,7 +130,22 @@ function hash(password: string): string {
 
 // Experiment 2
 
-console.log(crypto.createHmac("sha256", "abc").update("apple").digest("hex")); // f6b6b758da594e573ce376e520f2a2a4dad892cadcb41d5089f7181cb595e9dd
+// console.log(crypto.createHmac("sha256", "abc").update("apple").digest("hex")); // f6b6b758da594e573ce376e520f2a2a4dad892cadcb41d5089f7181cb595e9dd
 
-console.log(crypto.createHmac("sha256", "xyz").update("apple").digest("hex")); // 2e5309555086600192fe2ac9225924c58e24b224cfe9ab6dd45ab462ebac75f2
+// console.log(crypto.createHmac("sha256", "xyz").update("apple").digest("hex")); // 2e5309555086600192fe2ac9225924c58e24b224cfe9ab6dd45ab462ebac75f2
 // Do they match? -> No
+
+function createSignature(message: string) {
+  return crypto.createHmac("sha256", "secret123").update(message).digest("hex");
+}
+
+console.log(createSignature(process.argv[2]));
+
+const password = createSignature("helloWorld");
+function verify(message: string, signature: string) {
+  const hmacMessage = createSignature(message);
+  const isMatched = hmacMessage === password;
+  return isMatched;
+}
+
+console.log(verify(process.argv[2], password));
