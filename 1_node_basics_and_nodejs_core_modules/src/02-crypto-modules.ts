@@ -107,13 +107,30 @@ function hash(password: string): string {
 
 // console.log(hash("hello world lets learn node js ?")); // 9251208ecb40f733f4dc1a0fdc0c949bde5181073f82f4d7eed69bbf810e6fc5
 
-console.log(hash(process.argv[2]));
+// console.log(hash(process.argv[2]));
 
-const password = hash("helloWorld");
+// const password = hash("helloWorld");
 
-function compareHash(password: string, storededhash: string) {
-  const hashValue = hash(password);
-  return hashValue === storededhash;
-}
+// function compareHash(password: string, storededhash: string) {
+//   const hashValue = hash(password);
+//   return hashValue === storededhash;
+// }
 
-console.log(compareHash(process.argv[2], password));
+// console.log(compareHash(process.argv[2], password));
+
+// Hmac
+
+// Experiment 1
+
+// const secret = "abc";
+
+// console.log(crypto.createHmac("sha256", secret).update("apple").digest("hex")); //f6b6b758da594e573ce376e520f2a2a4dad892cadcb41d5089f7181cb595e9dd
+
+// console.log(crypto.createHmac("sha256", secret).update("Apple").digest("hex")); // b622610df2862aaa7a957fd86f12f3db01fd544c6649e825a43f66ee582f9b4b
+
+// Experiment 2
+
+console.log(crypto.createHmac("sha256", "abc").update("apple").digest("hex")); // f6b6b758da594e573ce376e520f2a2a4dad892cadcb41d5089f7181cb595e9dd
+
+console.log(crypto.createHmac("sha256", "xyz").update("apple").digest("hex")); // 2e5309555086600192fe2ac9225924c58e24b224cfe9ab6dd45ab462ebac75f2
+// Do they match? -> No

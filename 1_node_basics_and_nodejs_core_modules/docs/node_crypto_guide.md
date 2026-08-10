@@ -539,3 +539,152 @@ A process that takes an input (or 'message') and turns it into a fixed-size stri
 ### Encryption
 
 A process that transforms readable data (plaintext) into an unreadable format (ciphertext) using a mathematical algorithm and a secret key. The scrambled data remains secure until an authorized party provides the corresponding key to unlock and read the original message.
+
+# Lesson 3: crypto.createHmac() 🔐
+
+**Goal:** Understand what an HMAC is, why it is needed, and where it is used in production systems to verify data authenticity.
+
+---
+
+## The Core Problem
+
+Imagine you operate an online e-commerce storefront. A third-party payment provider sends your API server the following asynchronous HTTP webhook request:
+
+```json
+{
+  "orderId": 123,
+  "amount": 100,
+  "status": "paid"
+}
+```
+
+Your server parses this data and thinks: _"Excellent, order #123 has been completely paid for!"_
+
+#### Should you trust this blindly?
+
+❌ **Absolutely not.** Anyone on the internet can spoof a POST request and send that exact JSON payload directly to your server endpoints.
+
+How can your backend guarantee that this specific request originated from your trusted payment provider and wasn't intercepted or modified in transit? This identity validation dilemma is the exact problem that **HMAC** solves.
+
+---
+
+## What is an HMAC?
+
+HMAC stands for **Hash-based Message Authentication Code**. Think of it as a standard cryptographic hash that requires both the **target message** and a **private secret key** to compute.
+
+### Structural Difference
+
+- **Standard Hash:**
+  ```text
+  Message ───> [ Hash Function ] ───> Hash Output
+  ```
+- **HMAC Signature:**
+  ```text
+  Message + Secret Key ───> [ HMAC Function ] ───> HMAC Signature
+  ```
+
+Without possessing the unique, shared secret key, a malicious actor cannot generate the correct matching HMAC output signature, even if they know the exact contents of the public message payload.
+
+---
+
+## Real-World Analogy 🔑
+
+Imagine you and a business partner agree on a shared secret phrase: `banana123`.
+
+Whenever your partner drops a physical transaction receipt into your mailbox, they run the text through a specific locking stamp configured to that secret phrase.
+
+- If a competitor drops a forged receipt into your mailbox, they won't have the secret phrase to configure their stamp correctly.
+- By checking the stamp profile, you can immediately identify the authentic partner versus the fake sender.
+
+An HMAC works similarly, but instead of physical stamps, the signature validation is generated mathematically using highly secure cryptographic primitives.
+
+---
+
+## Creating Your First HMAC
+
+```javascript
+const crypto = require("crypto");
+
+const secret = "mySecretKey";
+
+const hmac = crypto
+  .createHmac("sha256", secret)
+  .update("Hello World")
+  .digest("hex");
+
+console.log(hmac);
+```
+
+**Output:**
+
+```text
+2e2f3d64b197b1a20721868351f084a73e6d1...
+```
+
+While it visually resembles a regular SHA-256 hash string, this output is explicitly tied to the integrity of `mySecretKey`.
+
+### Behavior Under Mutated Inputs
+
+#### 1. If the Shared Secret Changes:
+
+```javascript
+const secret = "mySecretKey"; // Generates: 2e2f3d6...
+const secret = "anotherSecret"; // Generates: d712a51...
+```
+
+If the message remains exactly identical but the secret changes, the final HMAC signature transforms completely.
+
+#### 2. If the Message Changes:
+
+```text
+Hello World ───> Signature A
+Hello world ───> Signature B (Completely different)
+```
+
+Just like standard hashes, changing a single character triggers the **avalanche effect**, breaking the signature validation.
+
+---
+
+## Industry Implementations
+
+### 1. Payment Gateways
+
+When processing merchant checkouts, providers calculate an HMAC of the payload using a merchant-specific secret key before sending it over the network. Your backend calculates its own local HMAC version using your stored copy of that secret key.
+
+```text
+Received Remote Signature  ===  Locally Computed HMAC  ───>  ✅ Trust and Process
+Received Remote Signature  !==  Locally Computed HMAC  ───>  ❌ Reject/Drop Request
+```
+
+### 2. GitHub Webhooks
+
+Whenever a developer pushes new code, GitHub fires an automated notification to your server. To prevent bad actors from triggering fake build scripts, GitHub includes an `X-Hub-Signature-256` header containing an HMAC signature generated against your repository's webhook secret.
+
+### 3. Stripe Payments
+
+Stripe signs every event payload sent to your backend. Checking these signatures inside your Express apps ensures you only process real events, automatically responding with a `400 Bad Request` if the signature validation fails.
+
+---
+
+## Why Not Just Use a Standard Hash?
+
+Suppose a public webhook message reads:
+
+```json
+{ "amount": 100 }
+```
+
+An attacker could easily sniff this traffic, change the value to `{ "amount": 0 }`, and manually generate a fresh standard hash via `SHA-256(message)`. Because the SHA-256 algorithm is entirely public, standard hashes provide **integrity checks** but cannot provide **authenticity checks**.
+
+With an HMAC:
+$$\text{HMAC Value} = \text{SHA-256}(\text{Message} + \text{Secret Key})$$
+Because the attacker does not have access to your hidden `Secret Key`, they are unable to calculate a valid replacement signature for their altered data payload.
+
+---
+
+## Summary Checklist
+
+- [x] HMAC provides **integrity** AND **authenticity** validation.
+- [x] It relies on a **shared secret key** known only to the sender and receiver.
+- [x] Webhook APIs (Stripe, GitHub, PayPal) rely extensively on HMAC signatures.
+- [x] Changing either the message data or the secret key yields a radically different signature string.
