@@ -41,7 +41,7 @@ const signature = crypto
   .update(message)
   .digest("hex");
 
-console.log(signature);
+console.log("signature : ", signature);
 
 const signatureVerify = crypto
   .createHmac("sha256", secret)
@@ -51,4 +51,4 @@ const signatureVerify = crypto
 console.log(
   "signature is valid and matching : ",
   signature === signatureVerify,
-);
+); // true
