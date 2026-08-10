@@ -1055,3 +1055,200 @@ A massive beginner trap is treating every random-looking string or cryptographic
 - 🛡️ **Need to authenticate origin identity and prevent webhook tampering?** $\rightarrow$ Use `crypto.createHmac()`
 
 Choosing the precise API for the specific security context is the clear mark of a senior, professional developer.
+
+# Lesson 5: Encryption & Decryption 🔐
+
+**Goal:** Learn what encryption is, how it fundamentally differs from hashing, why production architectures rely on it, and how to safely implement symmetric two-way cryptography using Node.js.
+
+---
+
+## First, A Story 🏦
+
+Imagine you are engineering a core banking application. A customer inputs their credit card number during checkout:
+
+```text
+4111 1111 1111 1111
+```
+
+If you hash it using your knowledge from Lesson 2:
+
+```text
+4111 1111 1111 1111  ───>  8f8a2fbc7e91...
+```
+
+When you need to charge the customer's card again next month for a recurring subscription, can you reverse that hash back into the card digits? **❌ No.** Hashing is strictly a one-way street.
+
+Because the bank must recover the original data string to process the financial transaction, hashing fails this use case. To protect data confidentiality while retaining the ability to read the raw input later, you must turn to **Encryption**.
+
+---
+
+## What is Encryption?
+
+Encryption is a **two-way** mechanism that transforms readable data (**plaintext**) into an unreadable scrambled format (**ciphertext**) using a mathematical algorithm and a cryptographic key.
+
+```text
+Plaintext (Hello World)  ───[ Encrypt + Key ]───>  Ciphertext (9kL@#1xP$...)
+```
+
+Later, when authorized services need to view the information, the process is inverted:
+
+```text
+Ciphertext (9kL@#1xP...) ───[ Decrypt + Key ]───>  Plaintext (Hello World)
+```
+
+Unlike hashing, encrypted data is completely reversible if you possess the correct secret key.
+
+---
+
+## Real-World Analogy 🔒
+
+Imagine placing a private letter inside a heavy steel lockbox.
+
+- Anyone can look at or steal the box itself, but they cannot read the message inside.
+- Only an individual carrying the exact physical key can unlock the box, lift the lid, and read the original letter.
+
+That is encryption in its simplest conceptual form.
+
+---
+
+## Hashing vs. Encryption
+
+This is one of the most critical conceptual questions asked during technical backend engineering interviews:
+
+| Feature              | Hashing                                                 | Encryption                                                             |
+| :------------------- | :------------------------------------------------------ | :--------------------------------------------------------------------- |
+| **Direction**        | **One-way** mechanism.                                  | **Two-way** mechanism.                                                 |
+| **Reversibility**    | **Irreversible**. Original data cannot be recovered.    | **Reversible**. Data can be completely recovered with the correct key. |
+| **Primary Target**   | Passwords, integrity matching, file signatures.         | Sensitive records, API keys, private payloads.                         |
+| **Key Dependencies** | No secret key required to generate basic output hashes. | Requires a protected cryptographic key to encrypt and decrypt.         |
+
+---
+
+## Production Implementations
+
+Symmetric encryption is the standard defense pattern for:
+
+- 💳 Storing customer Credit Card tokens
+- 🔑 Protecting third-party API provider secret credentials
+- 👤 Obscuring Personally Identifiable Information (PII)
+- 🏥 Safeguarding Protected Health Information (PHI) / medical histories
+- 💬 Securing real-time instant messaging data pipelines
+- ☁️ Sealing database fields, server logs, and automated backup files
+
+---
+
+## Practical Implementation in Node.js
+
+Node.js provides two dedicated streaming primitives inside the `crypto` library:
+
+- `crypto.createCipheriv()`
+- `crypto.createDecipheriv()`
+
+To use these methods safely under the modern **AES-256-CBC** standard, you need three elements:
+
+1. **An Algorithm:** Specified protocol (e.g., `"aes-256-cbc"`).
+2. **A Secret Key:** A 32-byte (256-bit) buffer acting as the primary lock.
+3. **An Initialization Vector (IV):** A 16-byte random block that acts as a randomization seed.
+
+### 1. The Encryption Routine
+
+```javascript
+const crypto = require("crypto");
+
+const algorithm = "aes-256-cbc";
+// In real apps, keep these consistent and secure (e.g., loaded from process.env)
+const key = crypto.randomBytes(32); // 32 bytes = 256 bits
+const iv = crypto.randomBytes(16); // 16 bytes = 128-bit block size
+
+// Instantiate the cipher stream
+const cipher = crypto.createCipheriv(algorithm, key, iv);
+
+// Process the plaintext string into a hex ciphertext
+let encrypted = cipher.update("Hello World", "utf8", "hex");
+encrypted += cipher.final("hex");
+
+console.log("Ciphertext Output:", encrypted); // Output: 7a5d2d5b...
+```
+
+### 2. The Decryption Routine
+
+To reverse the process, feed the matching algorithm, key, and initialization vector into the decipher constructor:
+
+```javascript
+// Instantiate the decipher stream
+const decipher = crypto.createDecipheriv(algorithm, key, iv);
+
+// Process the hex ciphertext back into raw utf8 plaintext
+let decrypted = decipher.update(encrypted, "hex", "utf8");
+decrypted += decipher.final("utf8");
+
+console.log("Decrypted Output:", decrypted); // Output: Hello World
+```
+
+---
+
+## Why Do We Need an Initialization Vector (IV)?
+
+A frequent developer question is: _"Why can't I just use the key by itself?"_
+
+Imagine a medical application encrypting the plaintext word `"Healthy"` one million times across your database. If you use the encryption key alone without an IV, the resulting ciphertext string will look exactly identical all one million times. An eavesdropping attacker analyzing the database could easily reverse-engineer patterns in your data based on those repetitions.
+
+The **IV** introduces random entropy to the initialization phase. It ensures that encrypting the same identical plaintext multiple times always yields entirely unique, uncorrelated ciphertexts.
+
+---
+
+## Common Developer Mistakes
+
+- ❌ **Mistake 1: Hashing data you need to read later.** If your application needs to show a credit card or a phone number back to an end-user, do not use a hash function.
+- ❌ **Mistake 2: Reusing a static, un-rotated encryption key indefinitely without access controls.** If a malicious actor compromises that singular key, every historical record in your system is instantaneously exposed. Key rotation and safe storage are complex but mandatory.
+- ❌ **Mistake 3: Hardcoding keys directly into source code.**
+  ```javascript
+  // ❌ NEVER DO THIS
+  const key = "mysupersecretkey123";
+  ```
+  Instead, extract keys to environment variables or enterprise secret vaults:
+  ```javascript
+  const key = process.env.ENCRYPTION_KEY;
+  ```
+- ❌ **Mistake 4: Losing or overwriting your encryption keys.** If you lose the encryption key used to encrypt a database, your data becomes unrecoverable binary noise. There is no password-reset fallback for raw AES keys.
+- ❌ **Mistake 5: Encrypting user login passwords.** Passwords should **never** be encrypted. If you encrypt them, an administrator holding the key could read everyone's passwords. Passwords must always be hashed using a dedicated, slow work-factor algorithm like `bcrypt`, `scrypt`, or `Argon2`.
+
+---
+
+## Hands-On Experiments
+
+- **Experiment 1:** Wrap the baseline code above in a script to encrypt `"apple"`, decrypt it, and assert that the text resolves cleanly back to `"apple"`.
+- **Experiment 2:** Run the encryption sequence on the string `"apple"` two consecutive times using the same key but fresh, newly generated `crypto.randomBytes(16)` IVs. Verify that the two resulting ciphertext strings are entirely unique.
+- **Experiment 3:** Manually modify a single character inside your valid hex `encrypted` string payload, then pass it to the decipher logic. Observe how Node.js throws an explicit cryptographic padding error (`error:06065064:digital envelope routines:EVP_DecryptFinal_ex:bad decrypt`).
+
+---
+
+## Interview Questions & Answers
+
+#### 1. What's the difference between hashing and encryption?
+
+Hashing is an irreversible, one-way transformation intended to verify data integrity or check credentials without exposing them. Encryption is a reversible, two-way transformation intended to securely hide data and recover it later using a private key.
+
+#### 2. When should you choose encryption over hashing?
+
+Choose encryption when your backend processes must later reconstruct or read the original plaintext input to execute core business logic (e.g., retrieving payment gateway tokens, viewing medical history, or decryption of cloud backup payloads).
+
+#### 3. What is AES?
+
+AES stands for Advanced Encryption Standard. It is a globally adopted symmetric block cipher standard validated by security agencies worldwide. The `256` variant indicates a highly secure 256-bit key length.
+
+#### 4. Why do we utilize an Initialization Vector (IV)?
+
+An IV ensures semantic security by guaranteeing that encrypting identical plaintexts with the same secret key always produces distinct, randomized ciphertext strings, thereby preventing pattern-analysis attacks.
+
+#### 5. What happens if an organization loses its master encryption key?
+
+The encrypted data is permanently lost. Because secure cryptographic ciphers cannot be brute-forced within realistic timelines, losing a key renders the corresponding ciphertexts completely unrecoverable.
+
+---
+
+## Practice Exercises
+
+- **Exercise 1:** Build a functional simulation that encrypts the string `"Hello Node.js"` and prints both the generated ciphertext and the subsequent decrypted result.
+- **Exercise 2:** Create an abstraction utility function named `encrypt(text, key, iv)` that encapsulates the initialization stream and returns a clean hex ciphertext string.
+- **Exercise 3:** Build a corresponding utility function named `decrypt(encryptedText, key, iv)` that accepts the hex ciphertext string and returns a raw UTF-8 plaintext string.
