@@ -134,18 +134,18 @@ import process from "node:process";
 // Exercise 4 (Medium)
 // If no name is provided, and exit with process.exit(1);
 
-// if (!process.argv[2]) {
-//   process.on("exit", (code) => {
-//     console.log(`Process finished with exist code ${code}`);
-//   });
-// }
+if (!process.argv[2]) {
+  process.on("exit", (code) => {
+    console.log(`Process finished with exist code ${code}`);
+  });
+}
 
-// if (!process.argv[2]) {
-//   console.error("you didn't pass your name");
-//   process.exit(1);
-// }
+if (!process.argv[2]) {
+  console.error("you didn't pass your name");
+  process.exit(1);
+}
 
-// console.log("hello", process.argv[2]);
+console.log("hello", process.argv[2]);
 
 // Exercise 5 (Hard)
 // Build a tiny calculator. -> node app.js add 10 20 output : 30 | node app.js subtract 50 20 output : 30
@@ -163,25 +163,25 @@ import process from "node:process";
 
 // Create a simple CLI greeting app:
 
-const makeUppercase = process.argv.includes("--uppercase");
+// const makeUppercase = process.argv.includes("--uppercase");
 
-const argumentsOnly = process.argv
-  .slice(2)
-  .filter((arg) => arg !== "--uppercase");
+// const argumentsOnly = process.argv
+//   .slice(2)
+//   .filter((arg) => arg !== "--uppercase");
 
-const name = argumentsOnly[0];
+// const name = argumentsOnly[0];
 
-if (name) {
-  let greet = `Hello ${process.argv[2]} 👋`;
-  let message = "Today is a great day to learn Node.js.";
+// if (name) {
+//   let greet = `Hello ${process.argv[2]} 👋`;
+//   let message = "Today is a great day to learn Node.js.";
 
-  if (makeUppercase) {
-    greet = greet.toUpperCase();
-    message = message.toUpperCase();
-  }
+//   if (makeUppercase) {
+//     greet = greet.toUpperCase();
+//     message = message.toUpperCase();
+//   }
 
-  console.log(greet);
-  console.log(message);
-} else {
-  console.log("Please provide a name!");
-}
+//   console.log(greet);
+//   console.log(message);
+// } else {
+//   console.log("Please provide a name!");
+// }
