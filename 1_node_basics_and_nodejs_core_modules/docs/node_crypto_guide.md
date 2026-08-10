@@ -1042,3 +1042,16 @@ Theoretically, yes. Practically, no. The mathematical probability of generating 
 #### 5. What is the fundamental difference between `randomUUID()` and `randomBytes()`?
 
 `crypto.randomUUID()` generates data engineered exclusively to match the canonical 36-character hyphenated UUID layout, purpose-built for entity and database row identification. `crypto.randomBytes()` generates variable-length raw binary blocks designed to act as high-entropy cryptographic secrets, API keys, and session authenticators.
+
+## 🎯 Mentor's Advice
+
+One fundamental rule I want you to carry with you throughout your backend career: **Don't use a tool just because you can. Use it because it fits the exact problem you are trying to solve.**
+
+A massive beginner trap is treating every random-looking string or cryptographic method as interchangeable. To build secure architectures, memorize this operational blueprint:
+
+- 🪪 **Need a public identifier for database rows or URLs?** $\rightarrow$ Use `crypto.randomUUID()`
+- 🔑 **Need a high-entropy secret token or API key?** $\rightarrow$ Use `crypto.randomBytes()`
+- 📁 **Need to verify file integrity or structural data changes?** $\rightarrow$ Use `crypto.createHash()`
+- 🛡️ **Need to authenticate origin identity and prevent webhook tampering?** $\rightarrow$ Use `crypto.createHmac()`
+
+Choosing the precise API for the specific security context is the clear mark of a senior, professional developer.
