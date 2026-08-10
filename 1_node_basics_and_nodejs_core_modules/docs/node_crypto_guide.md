@@ -344,3 +344,171 @@ Raw binary data is difficult to transport cleanly. Converting it to a hexadecima
 - [x] The primary execution layer returns a raw binary `Buffer`.
 - [x] Append `.toString("hex")` to obtain a standard, web-safe string format.
 - [x] **Never** use `Math.random()` for security contexts.
+
+# Lesson 2: crypto.createHash() 🔐
+
+If you truly understand this lesson, you will understand how passwords are stored conceptually, how file integrity is checked, and why systems like Git can instantly detect file changes.
+
+---
+
+## What is Hashing?
+
+Hashing is the process of converting data of any size into a fixed-size string called a **hash** or **digest**.
+
+```text
+Hello World  ───( Hash Function )───>  a591a6d40bf420404a011733cfb7b190...
+```
+
+You do not need to know how the algorithm works internally. What matters is understanding its properties and real-world behavior.
+
+---
+
+## Why Does Hashing Exist?
+
+Imagine you are downloading a `5 GB` Ubuntu Linux installation file (`ubuntu.iso`). How do you know the file was not modified by an attacker or corrupted during the download process?
+
+To solve this, the website publishes an official **SHA-256 hash** alongside the download link:
+
+```text
+8e9f9f6d4f...
+```
+
+After downloading, your computer computes the hash of your local file:
+
+- **If both hashes match:** ✅ The file is completely unchanged and authentic.
+- **If they don't match:** ❌ The file was altered, incomplete, or corrupted.
+
+This safety check is called **integrity verification**.
+
+---
+
+## Creating Your First Hash
+
+```javascript
+const crypto = require("crypto");
+
+const hash = crypto.createHash("sha256").update("Hello World").digest("hex");
+
+console.log(hash);
+```
+
+**Output:**
+
+```text
+a591a6d40bf420404a011733cfb7b190afc166d4581f3e1290354d1478d6e4e8
+```
+
+### Breaking Down the Code:
+
+1. **`crypto.createHash("sha256")`**
+   Chooses the hashing algorithm.
+   - `SHA-256` ⭐⭐⭐⭐⭐ (Industry standard for basic hashing)
+   - `SHA-512` ⭐⭐⭐⭐ (More secure, larger footprint)
+   - `SHA-1` ❌ (Deprecated due to cryptographic vulnerabilities)
+   - `MD5` ❌ (Broken and unsafe for security purposes)
+
+2. **`.update("Hello World")`**
+   Provides the target data to hash. This can ingest a text string, a raw file buffer (`fileBuffer`), or stringified payloads like `JSON.stringify(user)`.
+
+3. **`.digest("hex")`**
+   Calculates the final checksum and outputs it as a readable hexadecimal string.
+
+---
+
+## Core Cryptographic Properties
+
+### Property 1: Determinism
+
+The same exact input always produces the identical hash output.
+
+```text
+hash("apple") ───> 3a7bd3...
+```
+
+If you run this code one million times, you will get the exact same string every time. This consistency allows systems to check if two pieces of data match without exposing the data itself.
+
+### Property 2: The Avalanche Effect
+
+Even a tiny change to the input creates an entirely different hash.
+
+```text
+apple ───> 3a7bd3...
+Apple ───> f223fa...
+```
+
+Changing just one lowercase letter to an uppercase letter completely flips the resulting output structure.
+
+### Property 3: One-Way (Irreversible)
+
+This is the most critical security concept.
+
+```text
+Password ───> Hash (Easy)
+Hash ───> Password (Impossible by design)
+```
+
+You cannot "decrypt" a cryptographic hash. The conversion only works in one direction because hashing discards pieces of structural information to generate a fixed-size footprint.
+
+---
+
+## Real-World Use Cases
+
+### 1. Password Verification (Conceptual Overview)
+
+- **During Registration:** User inputs `Password` $\rightarrow$ System generates `Hash` $\rightarrow$ System stores the `Hash` in the database.
+- **During Login:** User inputs `Entered Password` $\rightarrow$ System hashes it $\rightarrow$ System compares the new hash against the stored database hash.
+
+> ⚠️ **Important Caveat:** While Node.js allows you to do this with `crypto.createHash("sha256")`, production applications should use slow hashing functions like `bcrypt`, `scrypt`, or `Argon2` instead. Plain SHA-256 is highly vulnerable to speed-optimized brute-force and hardware cracking attacks.
+
+### 2. File Integrity Matching
+
+Platforms like Windows, Linux distributions, Docker Hub, and GitHub Releases publish official SHA-256 files so developers can verify downloaded packages.
+
+### 3. Git Version Control
+
+Git identifies project state commits and file content changes using hashes. If a single line in a file changes, its hash changes, allowing Git to efficiently track alterations across repositories.
+
+### 4. Blockchains
+
+Cryptocurrencies use cryptographic hashes to chronologically chain transaction blocks together and guarantee immutable records.
+
+---
+
+## Hands-On Experiments
+
+- **Experiment 1:** Write a script to hash the string `"apple"` twice. Confirm that both outputs are identical.
+- **Experiment 2:** Hash `"apple"` and `"Apple"`. Analyze the two strings to see how the avalanche effect works.
+- **Experiment 3:** Hash `"apple"` and `"apple "` (with a trailing space) to notice how hidden characters alter a hash signature.
+- **Experiment 4:** Hash a long paragraph of text. Change one punctuation mark and compare the before and after hashes.
+
+---
+
+## Common Developer Mistakes
+
+- ❌ **Mistake 1: Confusing hashing with encryption.** Hashing is an irreversible, one-way mechanism. Encryption is a reversible, two-way mechanism designed to decode data using an appropriate cryptographic key.
+- ❌ **Mistake 2: Storing raw user passwords with basic SHA-256.** Plain SHA-256 is designed to be exceptionally fast. Attackers can guess millions of combinations per second. Use slow, native work-factor algorithms like `scrypt` or external libraries like `bcrypt`.
+- ❌ **Mistake 3: Expecting variable outputs.** For a given hash configuration, the identical inputs will never yield distinct outputs.
+
+---
+
+## Interview Questions & Answers
+
+#### 1. What is hashing?
+
+A one-way cryptographic process that converts input data of any size into a fixed-size string representation called a digest.
+
+#### 2. Can you recover the original value from a cryptographic hash?
+
+No. Cryptographic hashes are designed to be strictly irreversible. They can only be matched by hashing an identical candidate input and comparing the resulting strings.
+
+#### 3. Why does changing a single character completely rewrite the hash output?
+
+This is caused by the **avalanche effect**, a design requirement in secure hash algorithms that ensures minor tweaks to input data produce radically uncorrelated outputs to prevent predictive mapping.
+
+#### 4. What is SHA-256?
+
+A widely adopted cryptographic hash function belonging to the SHA-2 family that produces a fixed 256-bit (32-byte) signature.
+
+#### 5. Why shouldn't you use SHA-256 alone for user password storage?
+
+Because it executes too quickly. Attackers using standard GPUs can perform billions of SHA-256 calculations per second to crack passwords via lookup tables or brute force. Password algorithms like `scrypt` or `bcrypt` add artificial resource delays to make cracking unfeasible.
