@@ -512,3 +512,30 @@ A widely adopted cryptographic hash function belonging to the SHA-2 family that 
 #### 5. Why shouldn't you use SHA-256 alone for user password storage?
 
 Because it executes too quickly. Attackers using standard GPUs can perform billions of SHA-256 calculations per second to crack passwords via lookup tables or brute force. Password algorithms like `scrypt` or `bcrypt` add artificial resource delays to make cracking unfeasible.
+
+# Cryptography Fundamentals: Hashing vs. Encryption
+
+Understanding the difference between hashing and encryption is one of the most common requirements for backend engineering and system security interviews.
+
+---
+
+## Direct Comparison
+
+| Feature                | Hashing                                                                                 | Encryption                                                                                                                                 |
+| :--------------------- | :-------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Direction**          | **One-way** mechanism.                                                                  | **Two-way** mechanism.                                                                                                                     |
+| **Reversibility**      | **Cannot be decrypted** or reversed back to its original form.                          | **Can be decrypted** back to plaintext using the correct cryptographic key.                                                                |
+| **Primary Use Cases**  | Used for **integrity verification**, file checksums, and secure password validation.    | Used to **protect sensitive data** in transit or at rest that must later be recovered (e.g., chat messages, credit card numbers).          |
+| **Output Determinism** | **Same input $\rightarrow$ same hash** (deterministic by design for matching purposes). | **Same plaintext can produce different ciphertext** every time, depending on the algorithm, secret keys, and initialization vectors (IVs). |
+
+---
+
+## Core Definitions
+
+### Hashing
+
+A process that takes an input (or 'message') and turns it into a fixed-size string of characters, usually a hexadecimal number. Because it discards structural information during the calculation, it is impossible to reverse-engineer the original data from the final output hash.
+
+### Encryption
+
+A process that transforms readable data (plaintext) into an unreadable format (ciphertext) using a mathematical algorithm and a secret key. The scrambled data remains secure until an authorized party provides the corresponding key to unlock and read the original message.
