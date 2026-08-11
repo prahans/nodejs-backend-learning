@@ -31,7 +31,37 @@ type FileResult = {
 // high traffic apis
 // background jobs
 
+function ensureDemoFolderExists(): void {
+  if (!fs.existsSync(DEMO_FOLDER_PATH)) {
+    fs.mkdirSync(DEMO_FOLDER_PATH, { recursive: true });
+  }
+}
+
 function runSyncExample(): FileResult {
   // write content to a file
   fs.writeFileSync(SYNC_FILE_PATH, "created using fs sync", "utf-8");
+  fs.appendFileSync(SYNC_FILE_PATH, " append using fs sync", "utf-8");
+  const content = fs.readFileSync(SYNC_FILE_PATH, "utf-8");
+  const stats = fs.statSync(SYNC_FILE_PATH);
+
+  return {
+    style: "sync",
+    content,
+    fileName: path.basename(SYNC_FILE_PATH),
+    sizeInBytes: stats.size,
+  };
 }
+
+async function main() {
+  try {
+    ensureDemoFolderExists();
+    const syncResult = runSyncExample();
+    console.log([syncResult]);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("file system error : ", error.message);
+    }
+  }
+}
+
+main();
