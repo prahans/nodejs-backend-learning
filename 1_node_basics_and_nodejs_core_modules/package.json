@@ -18,7 +18,8 @@
     "build": "tsc",
     "01": "tsx src/01-process-object.ts",
     "02": "tsx src/02-crypto-modules.ts",
-    "03": "tsx src/03-os-modules.ts"
+    "03": "tsx src/03-os-modules.ts",
+    "04": "tsx src/04-path-modules.ts"
   },
   "devDependencies": {
     "@types/node": "^26.1.2",
