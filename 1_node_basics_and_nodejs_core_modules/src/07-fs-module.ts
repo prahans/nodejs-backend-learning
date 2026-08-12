@@ -1,7 +1,6 @@
 import path from "node:path";
-import fs from "node:fs";
-import { resolve } from "node:dns";
-import { rejects } from "node:assert";
+import fs, { stat } from "node:fs";
+import fsPromises from "node:fs/promises";
 
 const DEMO_FOLDER_PATH = path.join(process.cwd(), "file-system", "fs-demo");
 const SYNC_FILE_PATH = path.join(DEMO_FOLDER_PATH, "sync_note.txt");
@@ -103,12 +102,39 @@ function runCallbackExample(): Promise<FileResult> {
   });
 }
 
+// promise api
+
+async function runPromiseExample(): Promise<FileResult> {
+  await fsPromises.writeFile(
+    PROMISE_FILE_PATH,
+    "created using promise api",
+    "utf-8",
+  );
+
+  await fsPromises.appendFile(
+    PROMISE_FILE_PATH,
+    " appended using promise api",
+    "utf-8",
+  );
+
+  const content = await fsPromises.readFile(PROMISE_FILE_PATH, "utf-8");
+  const stats = await fsPromises.stat(PROMISE_FILE_PATH);
+
+  return {
+    style: "promise",
+    content,
+    fileName: path.basename(PROMISE_FILE_PATH),
+    sizeInBytes: stats.size,
+  };
+}
+
 async function main() {
   try {
     ensureDemoFolderExists();
     const syncResult = runSyncExample();
     const callbackResult = await runCallbackExample();
-    console.log([syncResult, callbackResult]);
+    const promiseResult = await runPromiseExample();
+    console.log([syncResult, callbackResult, promiseResult]);
   } catch (error) {
     if (error instanceof Error) {
       console.error("file system error : ", error.message);
