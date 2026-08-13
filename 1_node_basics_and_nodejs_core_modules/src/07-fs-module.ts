@@ -104,37 +104,90 @@ function runCallbackExample(): Promise<FileResult> {
 
 // promise api
 
-async function runPromiseExample(): Promise<FileResult> {
+// async function runPromiseExample(): Promise<FileResult> {
+//   await fsPromises.writeFile(
+//     PROMISE_FILE_PATH,
+//     "created using promise api",
+//     "utf-8",
+//   );
+
+//   await fsPromises.appendFile(
+//     PROMISE_FILE_PATH,
+//     " appended using promise api",
+//     "utf-8",
+//   );
+
+//   const content = await fsPromises.readFile(PROMISE_FILE_PATH, "utf-8");
+//   const stats = await fsPromises.stat(PROMISE_FILE_PATH);
+
+//   return {
+//     style: "promise",
+//     content,
+//     fileName: path.basename(PROMISE_FILE_PATH),
+//     sizeInBytes: stats.size,
+//   };
+// }
+
+// async function main() {
+//   try {
+//     ensureDemoFolderExists();
+//     const syncResult = runSyncExample();
+//     const callbackResult = await runCallbackExample();
+//     const promiseResult = await runPromiseExample();
+//     console.log([syncResult, callbackResult, promiseResult]);
+//   } catch (error) {
+//     if (error instanceof Error) {
+//       console.error("file system error : ", error.message);
+//     }
+//   }
+// }
+
+// main();
+
+// console.log(path.join(process.cwd(), "node/note", "note-app"));
+const NEW_FOLDER_PATH = path.join(process.cwd(), "AboutMe");
+const FILE_PATH = path.join(NEW_FOLDER_PATH, "info.txt");
+
+type FileType = {
+  content: string;
+  fileName: string;
+  sizeInByte: number;
+};
+
+async function readThefile() {
+  const data = await fsPromises.readFile(SYNC_FILE_PATH, "utf-8");
+  return data;
+}
+
+async function writeTheFile() {
+  await fsPromises.mkdir("AboutMe", {
+    recursive: true,
+  });
+
   await fsPromises.writeFile(
-    PROMISE_FILE_PATH,
-    "created using promise api",
+    FILE_PATH,
+    "hello guys my name is prahans panuhar",
     "utf-8",
   );
+}
 
-  await fsPromises.appendFile(
-    PROMISE_FILE_PATH,
-    " appended using promise api",
+async function appendTheFile() {
+  await fsPromises.mkdir("AboutMe", {
+    recursive: true,
+  });
+
+  await fsPromises.writeFile(
+    FILE_PATH,
+    "hello guys my name is prahans panuhar",
     "utf-8",
   );
-
-  const content = await fsPromises.readFile(PROMISE_FILE_PATH, "utf-8");
-  const stats = await fsPromises.stat(PROMISE_FILE_PATH);
-
-  return {
-    style: "promise",
-    content,
-    fileName: path.basename(PROMISE_FILE_PATH),
-    sizeInBytes: stats.size,
-  };
 }
 
 async function main() {
   try {
-    ensureDemoFolderExists();
-    const syncResult = runSyncExample();
-    const callbackResult = await runCallbackExample();
-    const promiseResult = await runPromiseExample();
-    console.log([syncResult, callbackResult, promiseResult]);
+    const data = await readThefile();
+    await writeTheFile();
+    console.log(data);
   } catch (error) {
     if (error instanceof Error) {
       console.error("file system error : ", error.message);
