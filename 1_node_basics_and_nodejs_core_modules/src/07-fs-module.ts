@@ -217,7 +217,7 @@ async function listAndDeleteFolder(targetDir: string) {
 async function listFilesRecursively(dir: string) {
   try {
     const items = await fsPromises.readdir(dir, { withFileTypes: true });
-
+    console.log("-----------file list-------------");
     for (const item of items) {
       const fullPath = path.join(dir, item.name);
       if (item.isDirectory()) {
@@ -226,10 +226,17 @@ async function listFilesRecursively(dir: string) {
         console.log(item.name);
       }
     }
+    console.log("---------------------------------");
   } catch (error) {
     throw new Error("the folder you are trying to delete does not exist.");
   }
 }
+
+// Level 3
+// Read a JSON file.
+// Convert it to a JavaScript object.
+// Modify it.
+// Save it back.
 
 async function updateJsonFile() {
   const fileContent = await fsPromises.readFile(FILE_PATH, "utf-8");
@@ -248,9 +255,55 @@ async function updateJsonFile() {
   );
 }
 
+// Level 4
+// Copy an image.
+// Rename it.
+// Delete the original.
+
+async function level4() {
+  const srcPath = path.join(process.cwd(), "img", "1782910776195.jpg");
+  const destDir = path.join(process.cwd(), "img");
+  const destPath = path.join(destDir, "newName.jpg");
+  await fsPromises.copyFile(srcPath, destPath);
+
+  await fsPromises.unlink(srcPath);
+}
+
+// Level 5
+// Build a Notes Application.
+// Commands: add, delete, list, update, No database.
+// Only the fs module.
+
+async function notesApp(command: string, fileName?: string, content?: string) {
+  const NOTES_APPLICATION_DIR = path.join(process.cwd(), "notesApplication");
+  await fsPromises.mkdir("notesApplication", {
+    recursive: true,
+  });
+
+  if (command === "add" && fileName && content) {
+    const NOTES_APPLICATION_PATH = path.join(NOTES_APPLICATION_DIR, fileName);
+    await fsPromises.writeFile(NOTES_APPLICATION_PATH, content, "utf-8");
+  } else if (command === "delete" && fileName) {
+    const NOTES_APPLICATION_PATH = path.join(NOTES_APPLICATION_DIR, fileName);
+    await fsPromises.unlink(NOTES_APPLICATION_PATH);
+  } else if (command === "list") {
+    listFilesRecursively(NOTES_APPLICATION_DIR);
+  } else if (command === "update" && fileName && content) {
+    const NOTES_APPLICATION_PATH = path.join(NOTES_APPLICATION_DIR, fileName);
+    await fsPromises.writeFile(NOTES_APPLICATION_PATH, content, "utf-8");
+    const data = await fsPromises.readFile(NOTES_APPLICATION_PATH, "utf-8");
+    console.log("File content modified and overwritten successfully!");
+    console.log(fileName, " : ", data);
+  } else if (command === "read" && fileName) {
+    const NOTES_APPLICATION_PATH = path.join(NOTES_APPLICATION_DIR, fileName);
+    const data = await fsPromises.readFile(NOTES_APPLICATION_PATH, "utf-8");
+    console.log(data);
+  }
+}
+
 async function main() {
   try {
-    await deleteFolder();
+    await notesApp(process.argv[2], process.argv[3], process.argv[4]);
   } catch (error) {
     if (error instanceof Error) {
       console.error("file system error : ", error.message);
