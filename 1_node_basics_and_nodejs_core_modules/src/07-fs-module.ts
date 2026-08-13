@@ -145,8 +145,8 @@ function runCallbackExample(): Promise<FileResult> {
 // main();
 
 // console.log(path.join(process.cwd(), "node/note", "note-app"));
-const NEW_FOLDER_PATH = path.join(process.cwd(), "AboutMe");
-const FILE_PATH = path.join(NEW_FOLDER_PATH, "demo.txt");
+const NEW_FOLDER_PATH = path.join(process.cwd(), "file");
+const FILE_PATH = path.join(NEW_FOLDER_PATH, "test.json");
 const NEW_FILE_PATH = path.join(NEW_FOLDER_PATH, "prahans.txt");
 
 type FileType = {
@@ -156,8 +156,8 @@ type FileType = {
 };
 
 async function readThefile() {
-  const data = await fsPromises.readFile(FILE_PATH, "utf-8");
-  return data;
+  const fileContent = await fsPromises.readFile(FILE_PATH, "utf-8");
+  return fileContent;
 }
 
 async function writeTheFile() {
@@ -194,38 +194,63 @@ async function deleteFile() {
 }
 
 async function deleteFolder() {
-  const dir = path.join(process.cwd(), "file-system");
+  const dir = path.join(process.cwd(), "file");
   await fsPromises.rm(dir, { recursive: true, force: true });
 }
 
 const targetDir = path.join(process.cwd(), "AboutMe");
 
 async function listAndDeleteFolder(targetDir: string) {
-  // 1. List all items inside the folder (including nested ones)
-  console.log(`--- Files inside "${path.basename(targetDir)}": ---`);
-  listFilesRecursively(targetDir);
+  try {
+    // 1. List all items inside the folder (including nested ones)
+    console.log(`--- Files inside "${path.basename(targetDir)}": ---`);
+    listFilesRecursively(targetDir);
 
-  // 2. Forcefully delete the folder and everything inside it
-  await fsPromises.rm(targetDir, { recursive: true, force: true });
-  console.log(`\nSuccessfully deleted folder: ${targetDir}`);
+    // 2. Forcefully delete the folder and everything inside it
+    await fsPromises.rm(targetDir, { recursive: true, force: true });
+    console.log(`\nSuccessfully deleted folder: ${targetDir}`);
+  } catch (error) {
+    throw new Error("I think Folder does not exists");
+  }
 }
 
 async function listFilesRecursively(dir: string) {
-  const items = await fsPromises.readdir(dir, { withFileTypes: true });
+  try {
+    const items = await fsPromises.readdir(dir, { withFileTypes: true });
 
-  for (const item of items) {
-    const fullPath = path.join(dir, item.name);
-    if (item.isDirectory()) {
-      listFilesRecursively(fullPath);
-    } else {
-      console.log(item.name);
+    for (const item of items) {
+      const fullPath = path.join(dir, item.name);
+      if (item.isDirectory()) {
+        listFilesRecursively(fullPath);
+      } else {
+        console.log(item.name);
+      }
     }
+  } catch (error) {
+    throw new Error("the folder you are trying to delete does not exist.");
   }
+}
+
+async function updateJsonFile() {
+  const fileContent = await fsPromises.readFile(FILE_PATH, "utf-8");
+  const jsObj = JSON.parse(fileContent);
+
+  jsObj.active = false;
+  jsObj.testUsers[0].username = "Prahans";
+  jsObj.testUsers[1].username = "Laxmi";
+
+  const updateJsonString = JSON.stringify(jsObj, null, 2);
+
+  const updatedData = await fsPromises.writeFile(
+    FILE_PATH,
+    updateJsonString,
+    "utf-8",
+  );
 }
 
 async function main() {
   try {
-    await listAndDeleteFolder(targetDir);
+    await deleteFolder();
   } catch (error) {
     if (error instanceof Error) {
       console.error("file system error : ", error.message);
