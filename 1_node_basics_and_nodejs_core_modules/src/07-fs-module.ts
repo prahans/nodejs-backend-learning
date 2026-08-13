@@ -146,7 +146,7 @@ function runCallbackExample(): Promise<FileResult> {
 
 // console.log(path.join(process.cwd(), "node/note", "note-app"));
 const NEW_FOLDER_PATH = path.join(process.cwd(), "AboutMe");
-const FILE_PATH = path.join(NEW_FOLDER_PATH, "info.txt");
+const FILE_PATH = path.join(NEW_FOLDER_PATH, "demo.txt");
 const NEW_FILE_PATH = path.join(NEW_FOLDER_PATH, "prahans.txt");
 
 type FileType = {
@@ -165,11 +165,7 @@ async function writeTheFile() {
     recursive: true,
   });
 
-  await fsPromises.writeFile(
-    FILE_PATH,
-    "hello guys my name is prahans panuhar",
-    "utf-8",
-  );
+  await fsPromises.writeFile(FILE_PATH, "this is demo file", "utf-8");
 }
 
 async function appendTheFile() {
@@ -202,9 +198,34 @@ async function deleteFolder() {
   await fsPromises.rm(dir, { recursive: true, force: true });
 }
 
+const targetDir = path.join(process.cwd(), "AboutMe");
+
+async function listAndDeleteFolder(targetDir: string) {
+  // 1. List all items inside the folder (including nested ones)
+  console.log(`--- Files inside "${path.basename(targetDir)}": ---`);
+  listFilesRecursively(targetDir);
+
+  // 2. Forcefully delete the folder and everything inside it
+  await fsPromises.rm(targetDir, { recursive: true, force: true });
+  console.log(`\nSuccessfully deleted folder: ${targetDir}`);
+}
+
+async function listFilesRecursively(dir: string) {
+  const items = await fsPromises.readdir(dir, { withFileTypes: true });
+
+  for (const item of items) {
+    const fullPath = path.join(dir, item.name);
+    if (item.isDirectory()) {
+      listFilesRecursively(fullPath);
+    } else {
+      console.log(item.name);
+    }
+  }
+}
+
 async function main() {
   try {
-    await deleteFolder();
+    await listAndDeleteFolder(targetDir);
   } catch (error) {
     if (error instanceof Error) {
       console.error("file system error : ", error.message);
