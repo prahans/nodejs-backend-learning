@@ -9,5 +9,14 @@
 // buffer - raw bytes
 
 const textBuffer = Buffer.from("Node");
-console.log(textBuffer);
-console.log(textBuffer.toString("utf-8"));
+console.log(textBuffer); // <Buffer 4e 6f 64 65>
+console.log(textBuffer.toString("utf-8")); // Node
+
+const engBuffer = Buffer.from("Hello");
+console.log(engBuffer.length); // 5
+
+const fixedBuffer = Buffer.alloc(5);
+console.log(fixedBuffer); // <Buffer 00 00 00 00 00>
+fixedBuffer.write("api");
+console.log(fixedBuffer); // <Buffer 61 70 69 00 00>
+console.log(fixedBuffer.toString("utf-8")); // api
