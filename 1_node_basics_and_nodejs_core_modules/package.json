@@ -23,7 +23,8 @@
     "05": "tsx src/05-timers-modules.ts",
     "06": "tsx src/06-callback-promises-async-await-module.ts",
     "07": "tsx src/07-fs-module.ts",
-    "08": "tsx src/08-buffers.ts"
+    "08": "tsx src/08-buffers.ts",
+    "09": "tsx src/09-url-module.ts"
   },
   "devDependencies": {
     "@types/node": "^26.1.2",
