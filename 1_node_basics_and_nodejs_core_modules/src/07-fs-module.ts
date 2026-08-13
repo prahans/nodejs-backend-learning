@@ -147,6 +147,7 @@ function runCallbackExample(): Promise<FileResult> {
 // console.log(path.join(process.cwd(), "node/note", "note-app"));
 const NEW_FOLDER_PATH = path.join(process.cwd(), "AboutMe");
 const FILE_PATH = path.join(NEW_FOLDER_PATH, "info.txt");
+const NEW_FILE_PATH = path.join(NEW_FOLDER_PATH, "prahans.txt");
 
 type FileType = {
   content: string;
@@ -155,7 +156,7 @@ type FileType = {
 };
 
 async function readThefile() {
-  const data = await fsPromises.readFile(SYNC_FILE_PATH, "utf-8");
+  const data = await fsPromises.readFile(FILE_PATH, "utf-8");
   return data;
 }
 
@@ -172,22 +173,20 @@ async function writeTheFile() {
 }
 
 async function appendTheFile() {
-  await fsPromises.mkdir("AboutMe", {
-    recursive: true,
-  });
-
-  await fsPromises.writeFile(
+  await fsPromises.appendFile(
     FILE_PATH,
-    "hello guys my name is prahans panuhar",
+    " | i am a fullstack developer.",
     "utf-8",
   );
 }
 
+async function renameFile() {
+  await fsPromises.rename(FILE_PATH, NEW_FILE_PATH);
+}
+
 async function main() {
   try {
-    const data = await readThefile();
-    await writeTheFile();
-    console.log(data);
+    await renameFile();
   } catch (error) {
     if (error instanceof Error) {
       console.error("file system error : ", error.message);
