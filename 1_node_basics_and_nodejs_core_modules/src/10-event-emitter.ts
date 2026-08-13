@@ -16,3 +16,22 @@ type UserRegisterPayload = {
   id: number;
   email: string;
 };
+
+appEvents.on("user:registered", (user: UserRegisterPayload) => {
+  console.log(`email listerner: welcome email sent to this user ${user.email}`);
+});
+appEvents.on("user:registered", (user: UserRegisterPayload) => {
+  console.log(`log listerner: id : ${user.id},  email :  ${user.email}`);
+});
+
+function registerUser() {
+  const user = {
+    id: 1,
+    email: "prahans@gmail.com",
+  };
+  console.log("user saved");
+  appEvents.emit("user:registered", user);
+  console.log("register user : event listerns completed");
+}
+
+registerUser();
