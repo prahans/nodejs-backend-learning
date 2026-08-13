@@ -24,6 +24,10 @@ appEvents.on("user:registered", (user: UserRegisterPayload) => {
   console.log(`log listerner: id : ${user.id},  email :  ${user.email}`);
 });
 
+appEvents.once("app.started", () => {
+  console.log("once listener: app started");
+});
+
 function registerUser() {
   const user = {
     id: 1,
@@ -33,5 +37,8 @@ function registerUser() {
   appEvents.emit("user:registered", user);
   console.log("register user : event listerns completed");
 }
+
+appEvents.emit("app.started");
+appEvents.emit("app.started");
 
 registerUser();
