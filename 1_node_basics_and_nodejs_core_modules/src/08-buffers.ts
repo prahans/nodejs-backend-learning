@@ -20,3 +20,9 @@ console.log(fixedBuffer); // <Buffer 00 00 00 00 00>
 fixedBuffer.write("api");
 console.log(fixedBuffer); // <Buffer 61 70 69 00 00>
 console.log(fixedBuffer.toString("utf-8")); // api
+
+// chunks
+const chunks = [Buffer.from("Hello"), Buffer.from(" Node"), Buffer.from(" Js")];
+
+const combineBuffer = Buffer.concat(chunks);
+console.log(combineBuffer, combineBuffer.toString("utf-8"));
