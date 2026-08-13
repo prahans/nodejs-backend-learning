@@ -184,9 +184,27 @@ async function renameFile() {
   await fsPromises.rename(FILE_PATH, NEW_FILE_PATH);
 }
 
+async function copyFile() {
+  const srcPath = path.join(process.cwd(), "docs", "node_os_guide.md");
+  const destDir = path.join(process.cwd(), "AboutMe");
+  const destPath = path.join(destDir, "copied_data.md");
+  await fsPromises.copyFile(srcPath, destPath);
+}
+
+async function deleteFile() {
+  const dir = path.join(process.cwd(), "AboutMe");
+  const filePath = path.join(dir, "copied_data2.txt");
+  await fsPromises.unlink(filePath);
+}
+
+async function deleteFolder() {
+  const dir = path.join(process.cwd(), "file-system");
+  await fsPromises.rm(dir, { recursive: true, force: true });
+}
+
 async function main() {
   try {
-    await renameFile();
+    await deleteFolder();
   } catch (error) {
     if (error instanceof Error) {
       console.error("file system error : ", error.message);
