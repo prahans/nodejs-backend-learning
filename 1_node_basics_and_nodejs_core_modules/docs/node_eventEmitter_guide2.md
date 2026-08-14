@@ -908,3 +908,349 @@ We'll cover:
 5. Common interview questions
 
 This lesson is short but essential, and after it you'll have covered the core EventEmitter API that every Node.js backend developer should understand.
+
+# 📚 Lesson 3 (Part 2) — Inspecting Listeners
+
+Sometimes you don't want to **change** listeners—you want to **inspect** them.
+
+Node.js provides methods for this.
+
+---
+
+# 1. `listenerCount()`
+
+Imagine you're the restaurant manager.
+
+Before announcing:
+
+> "New order!"
+
+You want to know...
+
+> "How many waiters are listening?"
+
+That's exactly what `listenerCount()` does.
+
+```javascript
+const EventEmitter = require("events");
+
+const emitter = new EventEmitter();
+
+emitter.on("login", () => {});
+emitter.on("login", () => {});
+emitter.on("login", () => {});
+
+console.log(emitter.listenerCount("login"));
+```
+
+**Output:**
+
+```text
+3
+```
+
+---
+
+## Real-world use
+
+Suppose your application only wants to emit an event if someone is listening.
+
+```javascript
+if (emitter.listenerCount("payment") > 0) {
+  emitter.emit("payment", paymentData);
+}
+```
+
+Not very common, but useful in some event-driven systems.
+
+---
+
+# 2. `listeners()`
+
+Sometimes you want the actual listener functions.
+
+```javascript
+function logger() {
+  console.log("Logging...");
+}
+
+emitter.on("login", logger);
+
+console.log(emitter.listeners("login"));
+```
+
+**Output (simplified):**
+
+```text
+[ [Function: logger] ]
+```
+
+It returns an **array of functions**.
+
+---
+
+## Why is this useful?
+
+Mostly for:
+
+- Debugging
+- Testing
+- Building frameworks
+- Inspecting what's registered
+
+In normal Express applications, you'll rarely use it.
+
+---
+
+# 3. `eventNames()`
+
+Imagine your EventEmitter has many events.
+
+```javascript
+emitter.on("login", () => {});
+emitter.on("logout", () => {});
+emitter.on("payment", () => {});
+```
+
+Now ask:
+
+> "What events exist?"
+
+```javascript
+console.log(emitter.eventNames());
+```
+
+**Output:**
+
+```text
+[ 'login', 'logout', 'payment' ]
+```
+
+---
+
+## Real-world use
+
+Useful for:
+
+- Debugging
+- Monitoring
+- Developer tools
+
+Rare in everyday business logic.
+
+---
+
+# 4. `setMaxListeners()`
+
+This one is **very important**.
+
+By default:
+
+```text
+Maximum listeners per event = 10
+```
+
+Suppose you do this:
+
+```javascript
+for (let i = 0; i < 20; i++) {
+  emitter.on("login", () => {});
+}
+```
+
+Node doesn't stop you.
+
+Instead it prints a warning like:
+
+```text
+MaxListenersExceededWarning:
+Possible EventEmitter memory leak detected.
+```
+
+Notice:
+
+> **Warning, not an error.**
+
+The program continues running.
+
+---
+
+## Why does Node warn?
+
+Imagine this bug:
+
+```javascript
+app.get("/", () => {
+  emitter.on("login", logger);
+});
+```
+
+Every request adds another listener.
+
+After 1000 requests:
+
+```text
+login
+├── logger
+├── logger
+├── logger
+├── logger
+├── logger
+...
+1000 listeners
+```
+
+Now when `"login"` is emitted:
+
+```javascript
+logger();
+logger();
+logger();
+...
+// 1000 times
+```
+
+Problems:
+
+- Wasted memory
+- Slower execution
+- Duplicate work
+- Hard-to-find bugs
+
+Node warns you because this pattern often indicates a mistake.
+
+---
+
+# Can you increase the limit?
+
+Yes.
+
+```javascript
+emitter.setMaxListeners(20);
+```
+
+Or disable the warning:
+
+```javascript
+emitter.setMaxListeners(0);
+```
+
+or
+
+```javascript
+emitter.setMaxListeners(Infinity);
+```
+
+> ⚠️ Don't do this just to silence the warning.
+
+If you're seeing it unexpectedly, first ask:
+
+> "Why are so many listeners being added?"
+
+Increasing the limit should be a conscious design choice, **not** a way to hide a bug.
+
+---
+
+# Real Express Example
+
+### ❌ Bad
+
+```javascript
+app.get("/", (req, res) => {
+  emitter.on("message", logger);
+});
+```
+
+Every request adds another listener.
+
+---
+
+### ✅ Better
+
+```javascript
+emitter.on("message", logger);
+
+app.get("/", (req, res) => {
+  // Use the emitter
+});
+```
+
+Register the listener **once**, not once per request.
+
+---
+
+# Which methods matter most?
+
+| Method                 | Real-world Usage                                              |
+| ---------------------- | ------------------------------------------------------------- |
+| `off()`                | ⭐⭐⭐⭐⭐ Very common                                        |
+| `removeListener()`     | ⭐⭐ Mostly older code                                        |
+| `removeAllListeners()` | ⭐⭐⭐ Cleanup/shutdown                                       |
+| `listenerCount()`      | ⭐⭐ Occasional                                               |
+| `listeners()`          | ⭐ Mostly debugging                                           |
+| `eventNames()`         | ⭐ Mostly debugging                                           |
+| `setMaxListeners()`    | ⭐⭐⭐ Useful when designing libraries or diagnosing warnings |
+
+---
+
+# 🎯 Lesson 3 Summary
+
+You now know how to:
+
+- ✅ Add listeners (`on`, `once`)
+- ✅ Remove one listener (`off`)
+- ✅ Remove all listeners (`removeAllListeners`)
+- ✅ Count listeners (`listenerCount`)
+- ✅ Inspect listeners (`listeners`)
+- ✅ List events (`eventNames()`)
+- ✅ Understand and configure listener limits (`setMaxListeners`)
+- ✅ Recognize memory leak warnings and their common causes
+
+---
+
+# 💼 Do you need all of this?
+
+Remember when you asked:
+
+> "In real-world Express projects, do I really need to know this?"
+
+Here's the practical answer.
+
+## You should definitely know:
+
+- `on()`
+- `once()`
+- `emit()`
+- `off()`
+- Why memory leak warnings happen
+
+## Good to recognize:
+
+- `removeAllListeners()`
+- `listenerCount()`
+
+## Mostly useful for debugging, libraries, or framework development:
+
+- `listeners()`
+- `eventNames()`
+- `setMaxListeners()`
+
+Knowing **what they do** is enough for most backend jobs—you don't need to memorize every detail.
+
+---
+
+# 🚀 Next: Lesson 4 — The Special `"error"` Event
+
+This is one of the most important EventEmitter topics because it behaves differently from every other event.
+
+If you don't handle it correctly, your Node.js application can **crash**.
+
+We'll cover:
+
+1. Why `"error"` is special
+2. What happens if no `"error"` listener exists
+3. How to handle errors safely
+4. Real-world examples from streams, Express, and databases
+5. Common interview questions
+
+This lesson is short but essential, and after it you'll have covered the core EventEmitter API that every Node.js backend developer should understand.

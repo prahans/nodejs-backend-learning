@@ -358,5 +358,6 @@ appEvent.on("error", (err) => {
 });
 
 appEvent.emit("error", new Error("Database failed"));
+console.log("Still running...");
 appEvent.emit("login", "prahans");
 appEvent.emit("logout");
