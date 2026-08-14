@@ -286,3 +286,13 @@ function waiter(order: string) {
 
 restaurant.off("order", waiter);
 restaurant.emit("order", "pizza");
+
+const emitter = new EventEmitter();
+
+emitter.on("login", () => console.log("A"));
+emitter.on("login", () => console.log("B"));
+emitter.on("login", () => console.log("C"));
+
+emitter.removeAllListeners("login");
+
+emitter.emit("login");
