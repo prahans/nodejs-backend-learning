@@ -191,4 +191,6 @@ emitter.on("login", () => {
   console.log("Third");
 });
 
+emitter.emit("error", new Error("Database failed"));
+
 emitter.emit("login");
