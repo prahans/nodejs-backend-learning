@@ -340,6 +340,7 @@ appEvent.removeAllListeners("logout");
 appEvent.on("logout", () => {
   console.log("logout");
 });
+appEvent.setMaxListeners(50);
 
 appEvent.on("login", () => {});
 appEvent.on("logout", () => {});
@@ -352,6 +353,5 @@ for (let i = 0; i < 20; i++) {
 }
 
 // (node:15428) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 login listeners added to [EventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
-
 appEvent.emit("login", "prahans");
 appEvent.emit("logout");
