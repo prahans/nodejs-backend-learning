@@ -10,63 +10,66 @@ import { EventEmitter } from "node:stream";
 // .once() - register one listerner that runs only one time
 // .emit() - triggers an event and sends to the listeners
 
-const appEvents = new EventEmitter();
-const emitter = new EventEmitter();
+// const appEvents = new EventEmitter();
 
-type UserRegisterPayload = {
-  id: number;
-  email: string;
-};
+// type UserRegisterPayload = {
+//   id: number;
+//   email: string;
+// };
 
-appEvents.on("user:registered", (user: UserRegisterPayload) => {
-  console.log(`email listerner: welcome email sent to this user ${user.email}`);
-});
-appEvents.on("user:registered", (user: UserRegisterPayload) => {
-  console.log(`log listerner: id : ${user.id},  email :  ${user.email}`);
-});
+// appEvents.on("user:registered", (user: UserRegisterPayload) => {
+//   console.log(`email listerner: welcome email sent to this user ${user.email}`);
+// });
+// appEvents.on("user:registered", (user: UserRegisterPayload) => {
+//   console.log(`log listerner: id : ${user.id},  email :  ${user.email}`);
+// });
 
-appEvents.once("app.started", () => {
-  console.log("once listener: app started");
-});
+// appEvents.once("app.started", () => {
+//   console.log("once listener: app started");
+// });
 
-appEvents.on("login", () => {
-  console.log("user successfully login");
-});
+// appEvents.on("login", () => {
+//   console.log("user successfully login");
+// });
 
-function registerUser() {
-  const user = {
-    id: 1,
-    email: "prahans@gmail.com",
-  };
-  console.log("user saved");
-  appEvents.emit("user:registered", user);
-  console.log("register user : event listerns completed");
-}
+// function registerUser() {
+//   const user = {
+//     id: 1,
+//     email: "prahans@gmail.com",
+//   };
+//   console.log("user saved");
+//   appEvents.emit("user:registered", user);
+//   console.log("register user : event listerns completed");
+// }
 
-appEvents.on("login", () => {
-  console.log("Update dashboard");
-});
+// appEvents.on("login", () => {
+//   console.log("Update dashboard");
+// });
 
-appEvents.on("login", () => {
-  console.log("Save login history");
-});
+// appEvents.on("login", () => {
+//   console.log("Save login history");
+// });
 
-appEvents.on("login", () => {
-  console.log("Send email");
-});
+// appEvents.on("login", () => {
+//   console.log("Send email");
+// });
 
-appEvents.on("login", (name, age) => {
-  console.log("hello", name, "you are", age, "years old right");
-});
-emitter.on("info", (name, age) => {
-  console.log(`name: ${name}, age: ${age}`);
-});
+// appEvents.on("login", (name, age) => {
+//   console.log("hello", name, "you are", age, "years old right");
+// });
+// emitter.on("info", (name, age) => {
+//   console.log(`name: ${name}, age: ${age}`);
+// });
 
-appEvents.emit("app.started");
-appEvents.emit("login", "prahans", 22);
-registerUser();
-console.log(appEvents.listenerCount("login")); // 5
-console.log(appEvents.listeners("login"));
+// emitter.on("welcome", (msg) => {
+//   console.log(msg);
+// });
+
+// appEvents.emit("app.started");
+// appEvents.emit("login", "prahans", 22);
+// registerUser();
+// console.log(appEvents.listenerCount("login")); // 5
+// console.log(appEvents.listeners("login"));
 // [
 //   [Function (anonymous)],
 //   [Function (anonymous)],
@@ -74,4 +77,28 @@ console.log(appEvents.listeners("login"));
 //   [Function (anonymous)],
 //   [Function (anonymous)]
 // ]
-emitter.emit("info", "prahans", 22);
+
+const emitter = new EventEmitter();
+
+emitter.on("welcome", (msg) => {
+  console.log(msg);
+});
+
+emitter.on("login", () => {
+  console.log("Saving login history");
+});
+
+emitter.on("login", () => {
+  console.log("Updating dashboard");
+});
+
+emitter.on("user", (name, age) => {
+  console.log(`name: ${name}, age: ${age}`);
+});
+
+// Exercise 1 (Easy)
+emitter.emit("welcome", "Welcome to Node.js");
+// Exercise 2
+emitter.emit("login");
+// Exercise 3
+emitter.emit("user", "Prahans", 22);
