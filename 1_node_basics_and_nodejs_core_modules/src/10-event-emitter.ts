@@ -42,7 +42,31 @@ function registerUser() {
   console.log("register user : event listerns completed");
 }
 
-appEvents.emit("app.started");
-appEvents.emit("login");
+appEvents.on("login", () => {
+  console.log("Update dashboard");
+});
 
+appEvents.on("login", () => {
+  console.log("Save login history");
+});
+
+appEvents.on("login", () => {
+  console.log("Send email");
+});
+
+appEvents.on("login", (name, age) => {
+  console.log("hello", name, "you are", age, "years old right");
+});
+
+appEvents.emit("app.started");
+appEvents.emit("login", "prahans", 22);
 registerUser();
+console.log(appEvents.listenerCount("login")); // 5
+console.log(appEvents.listeners("login"));
+// [
+//   [Function (anonymous)],
+//   [Function (anonymous)],
+//   [Function (anonymous)],
+//   [Function (anonymous)],
+//   [Function (anonymous)]
+// ]
