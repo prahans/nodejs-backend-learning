@@ -229,3 +229,51 @@ emitter.on("user", (name) => {
 emitter.emit("user", "Prahans");
 // output will be
 // Prahans
+
+// Exercise 5 (Important) : What happens?
+// emitter.on("task", () => {
+//   console.log("A");
+// });
+// emitter.on("task", () => {
+//   throw new Error("Boom");
+// });
+// emitter.on("task", () => {
+//   console.log("C");
+// });
+// emitter.emit("task");
+// Will C print?
+// Explain why.
+// no C will not print because on second task listener it throw a error so that the third task listener will not work any code after that will not work that why we have handle error using try and catch block then it will print c
+// we can handle the error like this
+// emitter.on("task", () => {
+//   try{
+//     throw new Error("Boom");
+//   }catch(error){
+//     if(error instanceof Error){
+//       console.error("Caught error in second listener:", error.message);
+//     }
+//   }
+// });
+
+emitter.on("task", () => {
+  console.log("A");
+});
+emitter.on("task", () => {
+  try {
+    throw new Error("Boom");
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Caught error in second listener:", error.message);
+    }
+  }
+});
+emitter.on("task", () => {
+  console.log("C");
+});
+emitter.emit("task");
+
+// now in this case C will print because we are handling the error here in try and catch block
+// the output will look like this
+// A
+// Caught error in second listener: Boom
+// C
