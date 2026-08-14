@@ -341,5 +341,11 @@ appEvent.on("logout", () => {
   console.log("logout");
 });
 
+appEvent.on("login", () => {});
+appEvent.on("logout", () => {});
+appEvent.on("payment", () => {});
+
+console.log(appEvent.eventNames()); //[ 'login', 'logout', 'payment' ]
+
 appEvent.emit("login", "prahans");
 appEvent.emit("logout");
