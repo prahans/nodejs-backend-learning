@@ -28,6 +28,10 @@ appEvents.once("app.started", () => {
   console.log("once listener: app started");
 });
 
+appEvents.on("login", () => {
+  console.log("user successfully login");
+});
+
 function registerUser() {
   const user = {
     id: 1,
@@ -39,6 +43,6 @@ function registerUser() {
 }
 
 appEvents.emit("app.started");
-appEvents.emit("app.started");
+appEvents.emit("login");
 
 registerUser();
