@@ -92,9 +92,9 @@ emitter.on("welcome", (msg) => {
 //   console.log("Updating dashboard");
 // });
 
-emitter.on("user", (name, age) => {
-  console.log(`name: ${name}, age: ${age}`);
-});
+// emitter.on("user", (name, age) => {
+//   console.log(`name: ${name}, age: ${age}`);
+// });
 emitter.once("start", () => {
   console.log("app started..");
 });
@@ -113,7 +113,7 @@ emitter.emit("welcome", "Welcome to Node.js");
 // Exercise 2
 // emitter.emit("login");
 // Exercise 3
-emitter.emit("user", "Prahans", 22);
+// emitter.emit("user", "Prahans", 22);
 // Exercise 4 : Use once(). Emit "start" three times. It should print only one time.
 emitter.emit("start");
 emitter.emit("start");
@@ -191,6 +191,41 @@ emitter.on("login", () => {
   console.log("Third");
 });
 
-emitter.emit("error", new Error("Database failed"));
+// emitter.emit("error", new Error("Database failed"));
 
 emitter.emit("login");
+
+// Exercise 1 : Predict the output:
+emitter.on("hello", () => console.log("A"));
+console.log("1");
+emitter.emit("hello");
+console.log("2");
+
+// output will be
+// 1
+// A
+// 2
+
+// Exercise 2 : Predict the output:
+emitter.on("test", () => console.log("First"));
+emitter.on("test", () => console.log("Second"));
+emitter.emit("test");
+// output will be
+// First
+// Second
+
+// Exercise 3 : Predict the output:
+console.log("Before");
+emitter.emit("nothing");
+console.log("After");
+// output will be
+// Before
+// After
+
+// Exercise 4 : Predict the output:
+emitter.on("user", (name) => {
+  console.log(name);
+});
+emitter.emit("user", "Prahans");
+// output will be
+// Prahans
