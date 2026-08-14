@@ -340,7 +340,7 @@ appEvent.removeAllListeners("logout");
 appEvent.on("logout", () => {
   console.log("logout");
 });
-appEvent.setMaxListeners(50);
+appEvent.setMaxListeners(15);
 
 appEvent.on("login", () => {});
 appEvent.on("logout", () => {});
@@ -348,11 +348,15 @@ appEvent.on("payment", () => {});
 
 console.log(appEvent.eventNames()); //[ 'login', 'logout', 'payment' ]
 
-for (let i = 0; i < 20; i++) {
-  appEvent.on("login", () => {});
-}
-
+// for (let i = 0; i < 20; i++) {
+//   appEvent.on("login", () => {});
+// }
 // (node:15428) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 login listeners added to [EventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+
+appEvent.on("error", (err) => {
+  console.log("Handled:", err.message);
+});
+
 appEvent.emit("error", new Error("Database failed"));
 appEvent.emit("login", "prahans");
 appEvent.emit("logout");
