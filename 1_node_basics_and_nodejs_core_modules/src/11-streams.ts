@@ -18,9 +18,23 @@
 // memory efficient
 // streams types
 // readable stream - source of data
-// writeable stream - destination where the data is written
+// writable stream - destination where the data is written
 // transform stream - read the data, change it and pass that forward
 
-import { Readable } from "node:stream";
+import { Readable, Transform, Writable } from "node:stream";
 
 const readableStream = Readable.from(["Hello", "from", "nodejs", "streams"]);
+
+const uppercaseTransform = new Transform({
+  transform(chunk, encoding, callback) {
+    const text = chunk.toString();
+    callback(null, text.toUpperCase());
+  },
+});
+
+const writableStream = new Writable({
+  write(chunk, encoding, callback) {
+    console.log("chunk received", chunk.toString());
+    callback();
+  },
+});
