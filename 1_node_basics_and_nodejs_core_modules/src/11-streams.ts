@@ -22,6 +22,7 @@
 // transform stream - read the data, change it and pass that forward
 
 import { Readable, Transform, Writable } from "node:stream";
+import { pipeline } from "node:stream/promises";
 
 const readableStream = Readable.from(["Hello", "from", "nodejs", "streams"]);
 
@@ -38,3 +39,15 @@ const writableStream = new Writable({
     callback();
   },
 });
+
+async function main() {
+  try {
+    await pipeline(readableStream, uppercaseTransform, writableStream);
+    console.log("steam completed");
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : "unknown error";
+    console.log("steam failed", msg);
+  }
+}
+
+main();
