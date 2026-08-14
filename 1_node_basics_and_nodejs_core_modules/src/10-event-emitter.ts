@@ -121,3 +121,55 @@ emitter.emit("start");
 // Exercise 5 :Register three listeners. Print: emitter.listenerCount("order"); What number do you get?
 emitter.emit("order");
 console.log(emitter.listenerCount("order")); // 3
+
+// Exercise 6 (Real World)
+// Simulate an e-commerce order.
+
+// When an "orderPlaced" event is emitted with an order object, create separate listeners that:
+
+// Print Sending confirmation email...
+// Print Updating inventory...
+// Print Creating invoice...
+// Print Logging analytics...
+// All should receive the same order data.
+
+type OrderPayload = {
+  itemId: number;
+  itemName: string;
+  quantity: number;
+  user: {
+    userId: number;
+    name: string;
+    email: string;
+  };
+};
+
+emitter.on("orderPlace", (user: OrderPayload) => {
+  console.log(`Welcome ${user.user.name} to pizza.co`);
+});
+emitter.on("orderPlace", (user: OrderPayload) => {
+  console.log(`order have been placed on ${user.user.email}`);
+});
+emitter.on("orderPlace", (user: OrderPayload) => {
+  console.log(`you have ordered ${user.quantity} piece of ${user.itemName}`);
+});
+emitter.on("orderPlace", (user: OrderPayload) => {
+  console.log(`Thanks ${user.user.name} for buying from our company pizza.co`);
+});
+
+function registerOrder() {
+  const order: OrderPayload = {
+    itemId: 1,
+    itemName: "mushroom pizza",
+    quantity: 2,
+    user: {
+      userId: 1,
+      name: "prahans",
+      email: "prahans@gmail.com",
+    },
+  };
+  emitter.emit("orderPlace", order);
+  console.log("order completed");
+}
+
+registerOrder();
