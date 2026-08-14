@@ -78,11 +78,11 @@ import { EventEmitter } from "node:stream";
 //   [Function (anonymous)]
 // ]
 
-const emitter = new EventEmitter();
+// const emitter = new EventEmitter();
 
-emitter.on("welcome", (msg) => {
-  console.log(msg);
-});
+// emitter.on("welcome", (msg) => {
+//   console.log(msg);
+// });
 
 // emitter.on("login", () => {
 //   console.log("Saving login history");
@@ -95,32 +95,32 @@ emitter.on("welcome", (msg) => {
 // emitter.on("user", (name, age) => {
 //   console.log(`name: ${name}, age: ${age}`);
 // });
-emitter.once("start", () => {
-  console.log("app started..");
-});
-emitter.on("order", () => {
-  console.log("order 1");
-});
-emitter.on("order", () => {
-  console.log("order 2");
-});
-emitter.on("order", () => {
-  console.log("order 3");
-});
+// emitter.once("start", () => {
+//   console.log("app started..");
+// });
+// emitter.on("order", () => {
+//   console.log("order 1");
+// });
+// emitter.on("order", () => {
+//   console.log("order 2");
+// });
+// emitter.on("order", () => {
+//   console.log("order 3");
+// });
 
 // Exercise 1 (Easy)
-emitter.emit("welcome", "Welcome to Node.js");
+// emitter.emit("welcome", "Welcome to Node.js");
 // Exercise 2
 // emitter.emit("login");
 // Exercise 3
 // emitter.emit("user", "Prahans", 22);
 // Exercise 4 : Use once(). Emit "start" three times. It should print only one time.
-emitter.emit("start");
-emitter.emit("start");
-emitter.emit("start");
+// emitter.emit("start");
+// emitter.emit("start");
+// emitter.emit("start");
 // Exercise 5 :Register three listeners. Print: emitter.listenerCount("order"); What number do you get?
-emitter.emit("order");
-console.log(emitter.listenerCount("order")); // 3
+// emitter.emit("order");
+// console.log(emitter.listenerCount("order")); // 3
 
 // Exercise 6 (Real World)
 // Simulate an e-commerce order.
@@ -133,73 +133,73 @@ console.log(emitter.listenerCount("order")); // 3
 // Print Logging analytics...
 // All should receive the same order data.
 
-type OrderPayload = {
-  itemId: number;
-  itemName: string;
-  quantity: number;
-  user: {
-    userId: number;
-    name: string;
-    email: string;
-  };
-};
+// type OrderPayload = {
+//   itemId: number;
+//   itemName: string;
+//   quantity: number;
+//   user: {
+//     userId: number;
+//     name: string;
+//     email: string;
+//   };
+// };
 
-emitter.on("orderPlace", (user: OrderPayload) => {
-  console.log(`Welcome ${user.user.name} to pizza.co`);
-});
-emitter.on("orderPlace", (user: OrderPayload) => {
-  console.log(`order have been placed on ${user.user.email}`);
-});
-emitter.on("orderPlace", (user: OrderPayload) => {
-  console.log(`you have ordered ${user.quantity} piece of ${user.itemName}`);
-});
-emitter.on("orderPlace", (user: OrderPayload) => {
-  console.log(`Thanks ${user.user.name} for buying from our company pizza.co`);
-});
+// emitter.on("orderPlace", (user: OrderPayload) => {
+//   console.log(`Welcome ${user.user.name} to pizza.co`);
+// });
+// emitter.on("orderPlace", (user: OrderPayload) => {
+//   console.log(`order have been placed on ${user.user.email}`);
+// });
+// emitter.on("orderPlace", (user: OrderPayload) => {
+//   console.log(`you have ordered ${user.quantity} piece of ${user.itemName}`);
+// });
+// emitter.on("orderPlace", (user: OrderPayload) => {
+//   console.log(`Thanks ${user.user.name} for buying from our company pizza.co`);
+// });
 
-function registerOrder() {
-  const order: OrderPayload = {
-    itemId: 1,
-    itemName: "mushroom pizza",
-    quantity: 2,
-    user: {
-      userId: 1,
-      name: "prahans",
-      email: "prahans@gmail.com",
-    },
-  };
-  emitter.emit("orderPlace", order);
-  console.log("order completed");
-}
+// function registerOrder() {
+//   const order: OrderPayload = {
+//     itemId: 1,
+//     itemName: "mushroom pizza",
+//     quantity: 2,
+//     user: {
+//       userId: 1,
+//       name: "prahans",
+//       email: "prahans@gmail.com",
+//     },
+//   };
+//   emitter.emit("orderPlace", order);
+//   console.log("order completed");
+// }
 
-registerOrder();
+// registerOrder();
 
-emitter.on("login", () => {
-  console.log("First");
-});
+// emitter.on("login", () => {
+//   console.log("First");
+// });
 
-emitter.on("login", () => {
-  try {
-    throw new Error("Oops");
-  } catch (error) {
-    if (error instanceof Error)
-      console.error("Caught error in second listener:", error.message);
-  }
-});
+// emitter.on("login", () => {
+//   try {
+//     throw new Error("Oops");
+//   } catch (error) {
+//     if (error instanceof Error)
+//       console.error("Caught error in second listener:", error.message);
+//   }
+// });
 
-emitter.on("login", () => {
-  console.log("Third");
-});
+// emitter.on("login", () => {
+//   console.log("Third");
+// });
 
 // emitter.emit("error", new Error("Database failed"));
 
-emitter.emit("login");
+// emitter.emit("login");
 
 // Exercise 1 : Predict the output:
-emitter.on("hello", () => console.log("A"));
-console.log("1");
-emitter.emit("hello");
-console.log("2");
+// emitter.on("hello", () => console.log("A"));
+// console.log("1");
+// emitter.emit("hello");
+// console.log("2");
 
 // output will be
 // 1
@@ -207,26 +207,26 @@ console.log("2");
 // 2
 
 // Exercise 2 : Predict the output:
-emitter.on("test", () => console.log("First"));
-emitter.on("test", () => console.log("Second"));
-emitter.emit("test");
+// emitter.on("test", () => console.log("First"));
+// emitter.on("test", () => console.log("Second"));
+// emitter.emit("test");
 // output will be
 // First
 // Second
 
 // Exercise 3 : Predict the output:
-console.log("Before");
-emitter.emit("nothing");
-console.log("After");
+// console.log("Before");
+// emitter.emit("nothing");
+// console.log("After");
 // output will be
 // Before
 // After
 
 // Exercise 4 : Predict the output:
-emitter.on("user", (name) => {
-  console.log(name);
-});
-emitter.emit("user", "Prahans");
+// emitter.on("user", (name) => {
+//   console.log(name);
+// });
+// emitter.emit("user", "Prahans");
 // output will be
 // Prahans
 
@@ -255,25 +255,34 @@ emitter.emit("user", "Prahans");
 //   }
 // });
 
-emitter.on("task", () => {
-  console.log("A");
-});
-emitter.on("task", () => {
-  try {
-    throw new Error("Boom");
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error("Caught error in second listener:", error.message);
-    }
-  }
-});
-emitter.on("task", () => {
-  console.log("C");
-});
-emitter.emit("task");
+// emitter.on("task", () => {
+//   console.log("A");
+// });
+// emitter.on("task", () => {
+//   try {
+//     throw new Error("Boom");
+//   } catch (error) {
+//     if (error instanceof Error) {
+//       console.error("Caught error in second listener:", error.message);
+//     }
+//   }
+// });
+// emitter.on("task", () => {
+//   console.log("C");
+// });
+// emitter.emit("task");
 
 // now in this case C will print because we are handling the error here in try and catch block
 // the output will look like this
 // A
 // Caught error in second listener: Boom
 // C
+
+const restaurant = new EventEmitter();
+
+function waiter(order: string) {
+  console.log(`Serving : ${order}`);
+}
+
+restaurant.off("order", waiter);
+restaurant.emit("order", "pizza");
