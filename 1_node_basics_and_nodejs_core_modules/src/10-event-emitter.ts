@@ -95,6 +95,18 @@ emitter.on("login", () => {
 emitter.on("user", (name, age) => {
   console.log(`name: ${name}, age: ${age}`);
 });
+emitter.once("start", () => {
+  console.log("app started..");
+});
+emitter.on("order", () => {
+  console.log("order 1");
+});
+emitter.on("order", () => {
+  console.log("order 2");
+});
+emitter.on("order", () => {
+  console.log("order 3");
+});
 
 // Exercise 1 (Easy)
 emitter.emit("welcome", "Welcome to Node.js");
@@ -102,3 +114,10 @@ emitter.emit("welcome", "Welcome to Node.js");
 emitter.emit("login");
 // Exercise 3
 emitter.emit("user", "Prahans", 22);
+// Exercise 4 : Use once(). Emit "start" three times. It should print only one time.
+emitter.emit("start");
+emitter.emit("start");
+emitter.emit("start");
+// Exercise 5 :Register three listeners. Print: emitter.listenerCount("order"); What number do you get?
+emitter.emit("order");
+console.log(emitter.listenerCount("order")); // 3
