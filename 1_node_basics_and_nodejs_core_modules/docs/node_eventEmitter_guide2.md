@@ -908,3 +908,500 @@ We'll cover:
 5. Common interview questions
 
 This lesson is short but essential, and after it you'll have covered the core EventEmitter API that every Node.js backend developer should understand.
+
+# 📚 Lesson 4 — The Special `"error"` Event
+
+## 🎯 What You'll Learn
+
+By the end of this lesson, you'll know:
+
+- ✅ Why `"error"` is different from every other event
+- ✅ Why an unhandled `"error"` crashes your app
+- ✅ How to handle errors correctly
+- ✅ Real-world examples (Streams, File System, HTTP, Database)
+- ✅ Best practices
+- ✅ Interview questions
+
+---
+
+# Chapter 1 — Every Event Is Normal... Except One
+
+Let's start with a normal event.
+
+```javascript
+const EventEmitter = require("events");
+
+const emitter = new EventEmitter();
+
+emitter.emit("login");
+
+console.log("Application continues...");
+```
+
+### Output
+
+```text
+Application continues...
+```
+
+No listeners?
+
+No problem.
+
+Node simply ignores it.
+
+---
+
+The same is true for any event:
+
+```javascript
+emitter.emit("logout");
+emitter.emit("payment");
+emitter.emit("message");
+```
+
+Nothing happens.
+
+- No crash
+- No warning
+
+---
+
+## But now watch this...
+
+```javascript
+const EventEmitter = require("events");
+
+const emitter = new EventEmitter();
+
+emitter.emit("error", new Error("Database failed"));
+```
+
+### Output
+
+```text
+node:events:...
+Error: Database failed
+Emitted 'error' event...
+Node.js exited
+```
+
+💥 **The application crashes.**
+
+---
+
+# 🤔 Why?
+
+Because Node.js treats `"error"` as **special**.
+
+It assumes:
+
+> "If an error occurred and nobody handled it, I can't safely continue."
+
+So instead of silently ignoring it...
+
+Node throws the error and exits the process.
+
+---
+
+# 🍽️ Restaurant Analogy
+
+Imagine a restaurant.
+
+### Normal event
+
+```
+"New customer!"
+```
+
+Nobody hears it.
+
+Nothing happens.
+
+---
+
+Now imagine:
+
+```
+🔥 FIRE!!
+```
+
+Nobody responds.
+
+Would the manager ignore it?
+
+Of course not.
+
+The restaurant would shut down.
+
+That's exactly how Node treats `"error"`.
+
+---
+
+# Chapter 2 — How to Handle an Error
+
+Very simple.
+
+Register an `"error"` listener.
+
+```javascript
+const EventEmitter = require("events");
+
+const emitter = new EventEmitter();
+
+emitter.on("error", (err) => {
+  console.log("Handled:", err.message);
+});
+
+emitter.emit("error", new Error("Database failed"));
+
+console.log("Still running...");
+```
+
+### Output
+
+```text
+Handled: Database failed
+Still running...
+```
+
+Notice...
+
+The application **doesn't crash**.
+
+Because someone handled the error.
+
+---
+
+## Visual
+
+### Without an error listener
+
+```text
+emit("error")
+      │
+      ▼
+ No listener
+      │
+      ▼
+Application crashes
+```
+
+---
+
+### With an error listener
+
+```text
+emit("error")
+      │
+      ▼
+ error listener
+      │
+      ▼
+ Handle error
+      │
+      ▼
+Application continues
+```
+
+---
+
+# Chapter 3 — Why Did Node.js Design It This Way?
+
+Imagine a database connection fails.
+
+```text
+User pays money
+       ↓
+Database fails
+       ↓
+Payment not saved
+       ↓
+Server continues
+       ↓
+Chaos
+```
+
+Ignoring errors can leave your application in an inconsistent state.
+
+Node's philosophy is:
+
+> "Fail fast instead of hiding critical problems."
+
+An application that silently continues after a serious error can be far more dangerous than one that stops and gets restarted.
+
+---
+
+# Chapter 4 — Real World Example (File Stream)
+
+Suppose you open a file that doesn't exist.
+
+```javascript
+const fs = require("fs");
+
+const stream = fs.createReadStream("missing.txt");
+
+stream.on("error", (err) => {
+  console.log("Cannot read file:", err.message);
+});
+```
+
+Without the `"error"` listener, the stream emits an error event that would otherwise be unhandled.
+
+---
+
+## Database Example
+
+Imagine:
+
+```javascript
+db.connect();
+```
+
+The connection fails.
+
+Many database libraries emit an `"error"` event.
+
+You handle it like this:
+
+```javascript
+db.on("error", (err) => {
+  console.error("Database error:", err.message);
+});
+```
+
+Now your application can:
+
+- Log the error
+- Retry the connection
+- Notify monitoring systems
+- Shut down gracefully if needed
+
+---
+
+## HTTP Server Example
+
+Suppose the server can't bind to a port because it's already in use.
+
+```javascript
+server.on("error", (err) => {
+  console.error(err.message);
+});
+```
+
+Common errors include:
+
+- `EADDRINUSE` (address already in use)
+- Permission errors
+- Socket failures
+
+---
+
+# Chapter 5 — Does Express Use This?
+
+Yes, but indirectly.
+
+Express itself doesn't revolve around EventEmitter `"error"` events for route errors.
+
+Instead, it has its own middleware-based error handling.
+
+However, Express runs on top of Node.js.
+
+Underneath, you'll still find EventEmitters such as:
+
+- HTTP Server
+- Request streams
+- Response streams
+- File streams
+- Sockets
+
+Many of these emit `"error"` events.
+
+So even if Express has its own error middleware, you'll still encounter EventEmitter error handling when working with lower-level Node APIs.
+
+---
+
+# Chapter 6 — `throw` vs `emit("error")`
+
+These are related but different.
+
+### Using `throw`
+
+```javascript
+throw new Error("Oops");
+```
+
+Throws an exception immediately.
+
+---
+
+### Using `emit("error")`
+
+```javascript
+emitter.emit("error", new Error("Oops"));
+```
+
+Emits an `"error"` event.
+
+If an `"error"` listener exists, it receives the error.
+
+If not, Node throws it as an uncaught exception and exits the process.
+
+---
+
+# Chapter 7 — Best Practices
+
+### ✅ Always attach an `"error"` listener
+
+```javascript
+emitter.on("error", (err) => {
+  console.error(err);
+});
+```
+
+---
+
+### ✅ Log enough information
+
+```javascript
+console.error(err.message);
+```
+
+or
+
+```javascript
+console.error(err);
+```
+
+---
+
+### ✅ Decide whether the application can recover
+
+#### Recoverable
+
+- Temporary network timeout
+- Retryable database connection
+- Missing optional file
+
+#### Non-recoverable
+
+- Corrupted application state
+- Critical configuration missing
+- Programming bug that leaves the app in an invalid state
+
+In those cases, logging the error and shutting down gracefully is often the safest approach.
+
+---
+
+# ❌ Common Beginner Mistakes
+
+### ❌ Emitting `"error"` without registering an `"error"` listener
+
+---
+
+### ❌ Ignoring errors entirely
+
+```javascript
+emitter.on("error", () => {});
+```
+
+This prevents the crash but hides useful information.
+
+At minimum, log the error.
+
+---
+
+### ❌ Assuming Express error middleware catches every EventEmitter error
+
+It doesn't.
+
+EventEmitter `"error"` events and Express middleware errors are different mechanisms.
+
+---
+
+# 💼 Interview Questions
+
+## 1. Why is the `"error"` event special?
+
+Because if it's emitted without an `"error"` listener, Node treats it as an unhandled error and terminates the process.
+
+---
+
+## 2. What happens when `emit("error")` is called and no listener exists?
+
+The process throws the error and exits.
+
+---
+
+## 3. How do you prevent the crash?
+
+Register an `"error"` listener before the event can be emitted.
+
+```javascript
+emitter.on("error", (err) => {
+  console.error(err);
+});
+```
+
+---
+
+## 4. Does every event behave like `"error"`?
+
+No.
+
+Other events without listeners are simply ignored.
+
+---
+
+# 🎯 Lesson 4 Summary
+
+You now understand:
+
+- ✅ `"error"` is a **special EventEmitter event**
+- ✅ Other events without listeners are ignored
+- ✅ An unhandled `"error"` causes Node.js to terminate the process
+- ✅ Register an `"error"` listener to handle emitted errors
+- ✅ Streams, servers, sockets, and many Node.js libraries rely on this mechanism
+- ✅ Express has its own error middleware, but it does **not** replace EventEmitter `"error"` handling
+
+---
+
+# 🏆 Congratulations!
+
+At this point, you've learned the **core EventEmitter API**:
+
+- ✅ `on()`
+- ✅ `once()`
+- ✅ `emit()`
+- ✅ `off()`
+- ✅ `removeListener()`
+- ✅ `removeAllListeners()`
+- ✅ `listenerCount()`
+- ✅ `listeners()`
+- ✅ `eventNames()`
+- ✅ `setMaxListeners()`
+- ✅ The special `"error"` event
+
+This is enough EventEmitter knowledge for the vast majority of Node.js backend work.
+
+---
+
+# ⏭️ Recommended Next Topic
+
+The next topic to learn is **Streams**:
+
+- `Readable`
+- `Writable`
+- `Duplex`
+- `Transform`
+
+EventEmitter knowledge becomes incredibly useful there because **every stream is an EventEmitter**.
+
+Once you understand streams, many parts of Node.js become much easier to understand, including:
+
+- File handling
+- HTTP
+- Networking
+- File uploads
+- File downloads
+- Database drivers
