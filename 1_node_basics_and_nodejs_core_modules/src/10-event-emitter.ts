@@ -3,6 +3,7 @@
 // write a log
 // notify some other service
 
+import { removeAllListeners } from "node:cluster";
 import { EventEmitter } from "node:stream";
 
 // emit one event -> listeners listen to this event do something
@@ -278,21 +279,67 @@ import { EventEmitter } from "node:stream";
 // Caught error in second listener: Boom
 // C
 
-const restaurant = new EventEmitter();
+// const restaurant = new EventEmitter();
 
-function waiter(order: string) {
-  console.log(`Serving : ${order}`);
+// function waiter(order: string) {
+//   console.log(`Serving : ${order}`);
+// }
+
+// restaurant.off("order", waiter);
+// restaurant.emit("order", "pizza");
+
+// const emitter = new EventEmitter();
+
+// emitter.on("login", () => console.log("A"));
+// emitter.on("login", () => console.log("B"));
+// emitter.on("login", () => console.log("C"));
+
+// emitter.removeAllListeners("login");
+
+// emitter.emit("login");
+
+// 📝 Exercise 1 (Hands-on)
+// Create a file:
+// lesson3-part1.js
+
+// Do the following:
+
+// Create an EventEmitter.
+// Create a named function welcomeUser.
+// Register it for a "login" event.
+// Emit "login" once.
+// Remove the listener using off().
+// Emit "login" again.
+// Observe the output.
+// Add three listeners to a "logout" event.
+// Emit "logout" once.
+// Call removeAllListeners("logout").
+// Emit "logout" again.
+
+const appEvent = new EventEmitter();
+
+function welcomeUser(userName: string) {
+  console.log(`welcome ${userName}`);
 }
 
-restaurant.off("order", waiter);
-restaurant.emit("order", "pizza");
+appEvent.on("login", welcomeUser);
+appEvent.off("login", welcomeUser);
+appEvent.on("login", welcomeUser);
 
-const emitter = new EventEmitter();
+appEvent.on("logout", () => {
+  console.log("logout 1");
+});
+appEvent.on("logout", () => {
+  console.log("logout 2");
+});
+appEvent.on("logout", () => {
+  console.log("logout 3");
+});
 
-emitter.on("login", () => console.log("A"));
-emitter.on("login", () => console.log("B"));
-emitter.on("login", () => console.log("C"));
+appEvent.removeAllListeners("logout");
+appEvent.on("logout", () => {
+  console.log("logout");
+});
 
-emitter.removeAllListeners("login");
-
-emitter.emit("login");
+appEvent.emit("login", "prahans");
+appEvent.emit("logout");
