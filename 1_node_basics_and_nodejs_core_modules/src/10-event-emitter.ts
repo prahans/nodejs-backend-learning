@@ -347,5 +347,11 @@ appEvent.on("payment", () => {});
 
 console.log(appEvent.eventNames()); //[ 'login', 'logout', 'payment' ]
 
+for (let i = 0; i < 20; i++) {
+  appEvent.on("login", () => {});
+}
+
+// (node:15428) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 login listeners added to [EventEmitter]. MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+
 appEvent.emit("login", "prahans");
 appEvent.emit("logout");
