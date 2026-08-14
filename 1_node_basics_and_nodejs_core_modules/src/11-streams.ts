@@ -21,6 +21,7 @@
 // writable stream - destination where the data is written
 // transform stream - read the data, change it and pass that forward
 
+import path from "node:path";
 import { Readable, Transform, Writable } from "node:stream";
 import { pipeline } from "node:stream/promises";
 
@@ -50,4 +51,22 @@ async function main() {
   }
 }
 
-main();
+// main();
+
+import fsPromises from "node:fs/promises";
+import fs from "node:fs";
+const FILE_PATH = path.join(process.cwd(), "file", "story.txt");
+
+async function readFile() {
+  try {
+    const data = await fsPromises.readFile(FILE_PATH, "utf-8");
+    const data2 = await fs.createReadStream(FILE_PATH, "utf-8");
+    console.log(data);
+    console.log(data2);
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : "unknown error";
+    console.log("error : ", msg);
+  }
+}
+
+readFile();
