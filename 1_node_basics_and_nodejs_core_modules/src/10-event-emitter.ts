@@ -84,13 +84,13 @@ emitter.on("welcome", (msg) => {
   console.log(msg);
 });
 
-emitter.on("login", () => {
-  console.log("Saving login history");
-});
+// emitter.on("login", () => {
+//   console.log("Saving login history");
+// });
 
-emitter.on("login", () => {
-  console.log("Updating dashboard");
-});
+// emitter.on("login", () => {
+//   console.log("Updating dashboard");
+// });
 
 emitter.on("user", (name, age) => {
   console.log(`name: ${name}, age: ${age}`);
@@ -111,7 +111,7 @@ emitter.on("order", () => {
 // Exercise 1 (Easy)
 emitter.emit("welcome", "Welcome to Node.js");
 // Exercise 2
-emitter.emit("login");
+// emitter.emit("login");
 // Exercise 3
 emitter.emit("user", "Prahans", 22);
 // Exercise 4 : Use once(). Emit "start" three times. It should print only one time.
@@ -173,3 +173,22 @@ function registerOrder() {
 }
 
 registerOrder();
+
+emitter.on("login", () => {
+  console.log("First");
+});
+
+emitter.on("login", () => {
+  try {
+    throw new Error("Oops");
+  } catch (error) {
+    if (error instanceof Error)
+      console.error("Caught error in second listener:", error.message);
+  }
+});
+
+emitter.on("login", () => {
+  console.log("Third");
+});
+
+emitter.emit("login");
