@@ -11,6 +11,7 @@ import { EventEmitter } from "node:stream";
 // .emit() - triggers an event and sends to the listeners
 
 const appEvents = new EventEmitter();
+const emitter = new EventEmitter();
 
 type UserRegisterPayload = {
   id: number;
@@ -57,6 +58,9 @@ appEvents.on("login", () => {
 appEvents.on("login", (name, age) => {
   console.log("hello", name, "you are", age, "years old right");
 });
+emitter.on("info", (name, age) => {
+  console.log(`name: ${name}, age: ${age}`);
+});
 
 appEvents.emit("app.started");
 appEvents.emit("login", "prahans", 22);
@@ -70,3 +74,4 @@ console.log(appEvents.listeners("login"));
 //   [Function (anonymous)],
 //   [Function (anonymous)]
 // ]
+emitter.emit("info", "prahans", 22);
