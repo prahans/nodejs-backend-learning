@@ -60,13 +60,26 @@ const FILE_PATH = path.join(process.cwd(), "file", "story.txt");
 async function readFile() {
   try {
     const data = await fsPromises.readFile(FILE_PATH, "utf-8");
-    const data2 = await fs.createReadStream(FILE_PATH, "utf-8");
     console.log(data);
-    console.log(data2);
+    const stream = fs.createReadStream(FILE_PATH, "utf-8");
+
+    stream.on("data", (chunk) => {
+      console.log("\n", chunk);
+    });
   } catch (error) {
     const msg = error instanceof Error ? error.message : "unknown error";
     console.log("error : ", msg);
   }
 }
 
-readFile();
+// readFile();
+
+const stream = fs.createReadStream(FILE_PATH);
+
+stream.on("data", (chunk) => {
+  console.log("DATA:", chunk.length);
+});
+
+stream.on("end", () => {
+  console.log("DONE");
+});
