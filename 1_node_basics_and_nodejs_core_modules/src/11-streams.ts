@@ -76,10 +76,18 @@ async function readFile() {
 
 const stream = fs.createReadStream(FILE_PATH);
 
-stream.on("data", (chunk) => {
-  console.log("DATA:", chunk.length);
-});
+// stream.on("data", (chunk) => {
+//   console.log("DATA:", chunk.length);
+// });
 
-stream.on("end", () => {
-  console.log("DONE");
+// stream.on("end", () => {
+//   console.log("DONE");
+// });
+
+stream.on("readable", () => {
+  let chunk;
+
+  while ((chunk = stream.read()) !== null) {
+    console.log("CHUNK:", chunk.length);
+  }
 });
