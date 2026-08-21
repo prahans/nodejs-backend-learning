@@ -56,3 +56,5 @@ async function fetchEcternalUser(): Promise<void> {
     clearTimeout(timeOut);
   }
 }
+
+fetchEcternalUser();
