@@ -44,6 +44,7 @@ const server = http.createServer(
           routes: ["GET/users"],
         },
       });
+      return;
     }
 
     if (method === "GET" && pathName === "/users") {
@@ -52,6 +53,7 @@ const server = http.createServer(
         message: "users fetched successfully",
         data: users,
       });
+      return;
     }
 
     sendJson<null>(res, 404, {
