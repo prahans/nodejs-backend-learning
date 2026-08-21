@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "name": "3_express",
   "version": "1.0.0",
@@ -18,3 +19,25 @@
     "typescript": "^7.0.2"
   }
 }
+=======
+{
+  "name": "3_express",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.2.0",
+    "typescript": "^7.0.2"
+  }
+}
+>>>>>>> 419cfdb (learning about express)
