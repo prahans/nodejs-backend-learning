@@ -7,14 +7,16 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "start": "node src/servingStaticFile.ts",
+  "dev": "nodemon src/servingStaticFile.ts"
+},
   "dependencies": {
     "express": "^5.2.1"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^26.2.0",
+    "nodemon": "^3.1.14",
     "typescript": "^7.0.2"
   }
 }
