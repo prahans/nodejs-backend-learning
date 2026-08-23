@@ -1,7 +1,45 @@
-import "./App.css";
+const posts = [
+  {
+    id: crypto.randomUUID(),
+    username: "apnacollege",
+    content: "learn Restful api",
+  },
+  {
+    id: crypto.randomUUID(),
+    username: "shradha",
+    content:
+      "hard work is important for success. and read the documentation of restful api.",
+  },
+  {
+    id: crypto.randomUUID(),
+    username: "prahans",
+    content: "i got my 1st internship on google company.",
+  },
+];
 
 function App() {
-  return <h1>lets make it</h1>;
+  return (
+    <>
+      <h1>Quora Posts</h1>
+      {posts.map((post) => (
+        <div className="post">
+          <h3 className="user">{post.username}</h3>
+          <h3 className="content">{post.content}</h3>
+          <a href="http://localhost:8080/posts/<%= post.id %>">
+            see in details
+          </a>
+          <a href="http://localhost:8080/posts/<%= post.id %>/edit">edit</a>
+          <form method="post" action="/posts/<%= post.id %>?_method=DELETE">
+            <button>delete</button>
+          </form>
+        </div>
+      ))}
+      <br />
+      <br />
+      <br />
+      <a href="http://localhost:8080/posts/new">create a new post</a>
+    </>
+  );
 }
 
 export default App;
