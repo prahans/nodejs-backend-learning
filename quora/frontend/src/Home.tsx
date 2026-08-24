@@ -28,9 +28,9 @@ function Home() {
         <div className="post" key={post.id}>
           <h3 className="user">@{post.username}</h3>
           <h3 className="content">{post.content}</h3>
-          <a href="http://localhost:8080/posts/<%= post.id %>">
+          <button onClick={() => navigate("/show", { state: { post } })}>
             see in details
-          </a>
+          </button>
           <button onClick={() => navigate("/Edit", { state: { post } })}>
             edit
           </button>
