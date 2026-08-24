@@ -16,6 +16,15 @@ app.get("/posts", async (req: Request, res: Response) => {
   res.json(data);
 });
 
+app.post("/posts/new", async (req: Request, res: Response) => {
+  const { username, content } = req.body;
+  const data = await Post.create({
+    username,
+    content,
+  });
+  res.status(201).json(data);
+});
+
 const startServer = async () => {
   try {
     // 1. Connect to MongoDB first
