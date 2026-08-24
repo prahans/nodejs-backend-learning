@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 
 type PostProps = {
-  id: string;
+  _id: string;
   username: string;
   content: string;
 };
@@ -14,7 +14,7 @@ function Show() {
   return (
     <>
       <h2>see in details</h2>
-      <p>post id : {post?.id}</p>
+      <p>post id : {post?._id}</p>
       <div className="post">
         <h3>{post?.username}</h3>
         <h4>{post?.content}</h4>
