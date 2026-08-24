@@ -42,7 +42,7 @@ function Home() {
       <br />
       <br />
       <br />
-      <a href="http://localhost:8080/posts/new">create a new post</a>
+      <button onClick={() => navigate("/new")}>create a new post</button>
     </>
   );
 }
