@@ -26,12 +26,14 @@ function Home() {
       <h1>Quora Posts</h1>
       {posts.map((post) => (
         <div className="post" key={post.id}>
-          <h3 className="user">{post.username}</h3>
+          <h3 className="user">@{post.username}</h3>
           <h3 className="content">{post.content}</h3>
           <a href="http://localhost:8080/posts/<%= post.id %>">
             see in details
           </a>
-          <button onClick={() => navigate("/Edit")}>edit</button>
+          <button onClick={() => navigate("/Edit", { state: { post } })}>
+            edit
+          </button>
           <form method="post" action="/posts/<%= post.id %>?_method=DELETE">
             <button>delete</button>
           </form>
