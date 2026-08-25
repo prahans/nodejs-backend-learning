@@ -1,3 +1,5 @@
+import axios from "axios";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 type PostProps = {
@@ -11,18 +13,52 @@ function Edit() {
   // Cast the state to your custom type safely
   const state = location.state as { post: PostProps } | null;
   const post = state?.post;
+
+  // 1. Set up local state to capture input values
+  const [content, setContent] = useState(post?.content);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // 2. Handle the submission event asynchronously
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault(); // Prevents HTML from trying to reload/redirect the entire page
+
+    if (!content?.trim()) {
+      alert("Please fill out all fields.");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+
+      // 3. Make the POST network request directly to your Express API
+      await axios.put(`http://localhost:3000/posts/${post?._id}`, {
+        username: post?.username,
+        content: content,
+      });
+
+      // 4. Redirect the user back to the feed page after success
+      navigate("/");
+    } catch (error) {
+      console.error("Error creating post:", error);
+      alert("Failed to submit post. Check if your server is running.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const navigate = useNavigate();
   return (
     <>
       <h2>Edit your post</h2>
       <p>username : @{post?.username}</p>
       <p>post id : {post?._id}</p>
-      <form method="post" action="/posts/<%= post.id %>?_method=PATCH">
+      <form onSubmit={handleSubmit}>
         <textarea
           rows={10}
           cols={35}
           name="content"
-          defaultValue={post?.content}
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
         ></textarea>
         <button>submit</button>
       </form>
