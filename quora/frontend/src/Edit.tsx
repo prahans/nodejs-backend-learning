@@ -60,9 +60,15 @@ function Edit() {
           value={content}
           onChange={(e) => setContent(e.target.value)}
         ></textarea>
-        <button>submit</button>
+        {content !== post?.content && (
+          <button disabled={isSubmitting}>
+            {isSubmitting ? "updating..." : "update post"}
+          </button>
+        )}
       </form>
-      <button onClick={() => navigate(-1)}>back</button>
+      <button onClick={() => navigate(-1)} disabled={isSubmitting}>
+        back
+      </button>
     </>
   );
 }
