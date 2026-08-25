@@ -1,6 +1,6 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 type Post = {
   _id: string;
@@ -10,34 +10,38 @@ type Post = {
 
 function Home() {
   const navigate = useNavigate();
+
+  // 1. Manage the list of posts in local state
   const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Declare an isolated async function inside the effect
     const fetchPosts = async () => {
-      try {
-        setLoading(true);
-        const res = await axios.get<Post[]>("http://localhost:3000/posts");
-        setPosts(res.data);
-      } catch (err) {
-        setError("Failed to load posts. Please try again later.");
-        console.error("Error fetching data:", err);
-      } finally {
-        setLoading(false);
-      }
+      const res = await axios.get("http://localhost:3000/posts");
+      setPosts(res.data);
     };
-
     fetchPosts();
   }, []);
 
-  if (loading) return <div>Loading posts...</div>;
-  if (error) return <div>{error}</div>;
+  // 2. The Delete Handler
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this post?")) return;
+
+    try {
+      // Send the delete request to the backend database
+      await axios.delete(`http://localhost:3000/posts/${id}`);
+
+      // 🔥 REFRESH EFFECT: Filter out the deleted post from state.
+      // React sees the state change and instantly re-renders the feed!
+      setPosts((prevPosts) => prevPosts.filter((post) => post._id !== id));
+    } catch (error) {
+      console.error("Failed to delete post:", error);
+      alert("Error deleting post. Make sure your server is online.");
+    }
+  };
   return (
     <>
       <h1>Quora Posts</h1>
-      {posts.map((post) => (
+      {posts?.map((post) => (
         <div className="post" key={post._id}>
           <h3 className="user">@{post.username}</h3>
           <h3 className="content">{post.content}</h3>
@@ -47,9 +51,12 @@ function Home() {
           <button onClick={() => navigate("/Edit", { state: { post } })}>
             edit
           </button>
-          <form method="post" action="/posts/<%= post.id %>?_method=DELETE">
-            <button>delete</button>
-          </form>
+          <button
+            onClick={() => handleDelete(post._id)}
+            style={{ color: "red", cursor: "pointer" }}
+          >
+            delete
+          </button>
         </div>
       ))}
       <br />
