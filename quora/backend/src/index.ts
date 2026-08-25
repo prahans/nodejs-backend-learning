@@ -48,6 +48,37 @@ app.delete("/posts/:id", async (req: Request, res: Response) => {
   }
 });
 
+// Using PUT or PATCH for modifications (e.g., /posts/:id)
+app.put("/posts/:id", async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { username, content } = req.body; // Extract fields coming from React
+
+  console.log("Updating post with ID:", id);
+
+  try {
+    // 1. Update the document.
+    // { new: true } returns the fresh, updated object back instead of the old one.
+    // { runValidators: true } ensures the new updates follow your Mongoose schema rules.
+    const updatedPost = await Post.findByIdAndUpdate(
+      id,
+      { username, content },
+      { new: true, runValidators: true },
+    );
+
+    // 2. Check if the post existed
+    if (!updatedPost) {
+      res.status(404).json({ message: "Post not found" });
+      return;
+    }
+
+    // 3. Send the updated post back to React so it can refresh the UI state
+    res.status(200).json(updatedPost);
+  } catch (error) {
+    console.error("Database update error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 const startServer = async () => {
   try {
     // 1. Connect to MongoDB first
