@@ -13,6 +13,11 @@ const port = 3000;
 //   next();
 // });
 
+app.use("/random", (req, res, next) => {
+  console.log("i am only for random.");
+  next();
+});
+
 app.use((req, res, next) => {
   const time = new Date(Date.now()).toString();
   console.log(req.method, req.path, req.hostname, time);
@@ -25,6 +30,10 @@ app.get("/", (req: Request, res: Response) => {
 
 app.get("/random", (req: Request, res: Response) => {
   res.send("Hi, i am random page");
+});
+
+app.use((req, res) => {
+  res.status(404).send("page not found");
 });
 
 app.listen(port, () => {
