@@ -9,8 +9,8 @@
     "moduleResolution": "NodeNext",
 
     /* Paths */
-    "rootDir": "./src",
-    "outDir": "./dist",
+    "rootDir": "src",
+    "outDir": "dist",
 
     "rewriteRelativeImportExtensions": true,
     "erasableSyntaxOnly": true,
