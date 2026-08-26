@@ -3,13 +3,19 @@ import express, { type Express, type Request, type Response } from "express";
 const app: Express = express();
 const port = 3000;
 
-app.use((req, res, next) => {
-  console.log("Hi, i am 1st middleware");
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log("Hi, i am 1st middleware");
+//   next();
+// });
+
+// app.use((req, res, next) => {
+//   console.log("Hi, i am 2nd middleware");
+//   next();
+// });
 
 app.use((req, res, next) => {
-  console.log("Hi, i am 2nd middleware");
+  const time = new Date(Date.now()).toString();
+  console.log(req.method, req.path, req.hostname, time);
   next();
 });
 
