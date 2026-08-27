@@ -4,6 +4,7 @@ import express, {
   type Request,
   type Response,
 } from "express";
+import cookieParser from "cookie-parser";
 
 const app: Express = express();
 const port = 3000;
@@ -29,6 +30,8 @@ const port = 3000;
 //   next();
 // });
 
+app.use(cookieParser());
+
 const checkToken = (req: Request, res: Response, next: NextFunction) => {
   const { token } = req.query;
   if (token === "giveaccess") {
@@ -42,6 +45,7 @@ app.get("/api", checkToken, (req: Request, res: Response) => {
 });
 
 app.get("/", (req: Request, res: Response) => {
+  console.log(req.cookies);
   res.send("Hi, i am root");
 });
 
