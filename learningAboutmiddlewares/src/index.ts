@@ -30,7 +30,8 @@ const port = 3000;
 //   next();
 // });
 
-app.use(cookieParser());
+const secret = "mysecretcode";
+app.use(cookieParser(secret));
 
 const checkToken = (req: Request, res: Response, next: NextFunction) => {
   const { token } = req.query;
@@ -52,6 +53,16 @@ app.get("/greet", (req: Request, res: Response) => {
 app.get("/", (req: Request, res: Response) => {
   console.log(req.cookies);
   res.send("Hi, i am root");
+});
+
+app.get("/verify", (req: Request, res: Response) => {
+  console.log(req.signedCookies);
+  res.send("done!");
+});
+
+app.get("/getsignedcookie", (req: Request, res: Response) => {
+  res.cookie("made-in", "nepal", { signed: true });
+  res.send("signed cookies send!!");
 });
 
 app.get("/getcookies", (req: Request, res: Response) => {
