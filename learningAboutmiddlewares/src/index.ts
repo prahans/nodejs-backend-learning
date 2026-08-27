@@ -45,6 +45,12 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Hi, i am root");
 });
 
+app.get("/getcookies", (req: Request, res: Response) => {
+  res.cookie("greet", "hello");
+  res.cookie("country", "nepal");
+  res.send("send you some cookies!!");
+});
+
 app.get("/random", (req: Request, res: Response) => {
   res.send("Hi, i am random page");
 });
