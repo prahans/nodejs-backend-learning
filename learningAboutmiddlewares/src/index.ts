@@ -44,6 +44,11 @@ app.get("/api", checkToken, (req: Request, res: Response) => {
   res.send("data");
 });
 
+app.get("/greet", (req: Request, res: Response) => {
+  const { name = "anonymous" } = req.cookies;
+  res.send(`Hi, ${name}`);
+});
+
 app.get("/", (req: Request, res: Response) => {
   console.log(req.cookies);
   res.send("Hi, i am root");
