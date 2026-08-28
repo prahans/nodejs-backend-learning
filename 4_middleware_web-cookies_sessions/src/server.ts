@@ -9,6 +9,7 @@ import session from "express-session";
 declare module "express-session" {
   interface SessionData {
     count: number;
+    name: string;
   }
 }
 
@@ -17,7 +18,24 @@ const port = 3000;
 
 const secret = "mySuperSecretString";
 
-app.use(session({ secret: secret, resave: false, saveUninitialized: true }));
+const sessionOption = {
+  secret: secret,
+  resave: false,
+  saveUninitialized: true,
+};
+
+app.use(session(sessionOption));
+
+app.get("/register", (req: Request, res: Response) => {
+  const { name = "anonymous" } = req.query;
+  console.log(req.session);
+  req.session.name = name.toString();
+  res.send(name);
+});
+
+app.get("/hello", (req: Request, res: Response) => {
+  res.send(`Hello, ${req.session.name}`);
+});
 
 app.get("/reqcount", (req: Request, res: Response) => {
   if (req.session.count) {
