@@ -30,7 +30,7 @@ app.get("/register", (req: Request, res: Response) => {
   const { name = "anonymous" } = req.query;
   console.log(req.session);
   req.session.name = name.toString();
-  res.send(name);
+  res.redirect("/hello");
 });
 
 app.get("/hello", (req: Request, res: Response) => {
