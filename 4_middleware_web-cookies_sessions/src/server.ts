@@ -11,6 +11,7 @@ declare module "express-session" {
     count: number;
     name: string;
     login: boolean;
+    userId: number;
   }
 }
 
@@ -19,6 +20,21 @@ const users = [
     id: 1,
     username: "prahans",
     password: "123456",
+  },
+  {
+    id: 2,
+    username: "anurag",
+    password: "1234567",
+  },
+  {
+    id: 3,
+    username: "karuna",
+    password: "12345678",
+  },
+  {
+    id: 4,
+    username: "pinki",
+    password: "123456789",
   },
 ];
 
@@ -38,18 +54,22 @@ app.use(express.json());
 
 app.post("/login", (req: Request, res: Response) => {
   const { username, password } = req.body;
-  if (username === users[0].username && password === users[0].password) {
-    req.session.login = true;
+  for (let user of users) {
+    if (user.username === username && user.password === password)
+      req.session.login = true;
+    req.session.userId = users.find((user) => user.username === username)?.id;
     return res.redirect("/profile");
   }
-  req.session.login = false;
   res.send("plz enter the correct username and password");
 });
 
 app.get("/profile", (req: Request, res: Response) => {
   console.log(req.session.login); // why this is undefine at the beginning
+  const username = users.find(
+    (user) => user.id === req.session.userId,
+  )?.username;
   if (req.session.login) {
-    return res.send("Welcome Prahans");
+    return res.send(`welcome, ${username}`);
   }
   return res.send("Unauthorized");
 });
