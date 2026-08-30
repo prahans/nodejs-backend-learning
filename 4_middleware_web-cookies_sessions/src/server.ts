@@ -52,6 +52,20 @@ const sessionOption = {
 app.use(session(sessionOption));
 app.use(express.json());
 
+const requireAuth = (req: Request, res: Response, next: NextFunction) => {
+  const userId = req.session.userId;
+  if (!userId) {
+    return res.status(401).send("Unauthorized");
+  }
+  const user = users.find((user) => user.id === userId);
+  if (!user) {
+    return res.status(401).send("Unauthorized");
+  }
+
+  req.user = user;
+  next();
+};
+
 app.post("/login", (req: Request, res: Response) => {
   const { username, password } = req.body;
   const user = users.find((user) => user.username === username);
@@ -62,12 +76,8 @@ app.post("/login", (req: Request, res: Response) => {
   res.redirect("/profile");
 });
 
-app.get("/profile", (req: Request, res: Response) => {
-  const user = users.find((user) => user.id === req.session.userId);
-  if (!user) {
-    return res.status(401).send("Unauthorized");
-  }
-  return res.send(`welcome, ${user.username}`);
+app.get("/profile", requireAuth, (req: Request, res: Response) => {
+  return res.send(`welcome, ${req.user.username}`);
 });
 
 app.get("/register", (req: Request, res: Response) => {
