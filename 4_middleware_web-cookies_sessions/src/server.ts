@@ -94,18 +94,18 @@ app.get("/profile", requireAuth, (req: Request, res: Response) => {
   return res.send(`welcome, ${req.user?.username}`);
 });
 
-app.get("/register", (req: Request, res: Response) => {
+app.get("/register", requireAuth, (req: Request, res: Response) => {
   const { name = "anonymous" } = req.query;
   console.log(req.session);
   req.session.name = name.toString();
   res.redirect("/hello");
 });
 
-app.get("/hello", (req: Request, res: Response) => {
-  res.send(`Hello, ${req.session.name}`);
+app.get("/hello", requireAuth, (req: Request, res: Response) => {
+  res.send(`Hello, ${req.user?.username}`);
 });
 
-app.get("/reqcount", (req: Request, res: Response) => {
+app.get("/reqcount", requireAuth, (req: Request, res: Response) => {
   if (req.session.count) {
     req.session.count++;
   } else {
@@ -114,7 +114,7 @@ app.get("/reqcount", (req: Request, res: Response) => {
   res.send(`you send a request ${req.session.count} times`);
 });
 
-app.get("/test", (req: Request, res: Response) => {
+app.get("/test", requireAuth, (req: Request, res: Response) => {
   res.send("test successful !");
 });
 
