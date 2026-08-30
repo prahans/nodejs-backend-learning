@@ -55,16 +55,16 @@ app.use(express.json());
 app.post("/login", (req: Request, res: Response) => {
   const { username, password } = req.body;
   for (let user of users) {
-    if (user.username === username && user.password === password)
+    if (user.username === username && user.password === password) {
       req.session.login = true;
-    req.session.userId = users.find((user) => user.username === username)?.id;
-    return res.redirect("/profile");
+      req.session.userId = users.find((user) => user.username === username)?.id;
+      return res.redirect("/profile");
+    }
   }
   res.send("plz enter the correct username and password");
 });
 
 app.get("/profile", (req: Request, res: Response) => {
-  console.log(req.session.login); // why this is undefine at the beginning
   const username = users.find(
     (user) => user.id === req.session.userId,
   )?.username;
