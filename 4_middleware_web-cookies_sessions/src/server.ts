@@ -6,6 +6,12 @@ import express, {
 } from "express";
 import session from "express-session";
 
+type User = {
+  id: number;
+  username: string;
+  password: string;
+};
+
 declare module "express-session" {
   interface SessionData {
     count: number;
@@ -15,7 +21,15 @@ declare module "express-session" {
   }
 }
 
-const users = [
+declare global {
+  namespace Express {
+    interface Request {
+      user?: User;
+    }
+  }
+}
+
+const users: User[] = [
   {
     id: 1,
     username: "prahans",
@@ -77,7 +91,7 @@ app.post("/login", (req: Request, res: Response) => {
 });
 
 app.get("/profile", requireAuth, (req: Request, res: Response) => {
-  return res.send(`welcome, ${req.user.username}`);
+  return res.send(`welcome, ${req.user?.username}`);
 });
 
 app.get("/register", (req: Request, res: Response) => {
