@@ -54,24 +54,20 @@ app.use(express.json());
 
 app.post("/login", (req: Request, res: Response) => {
   const { username, password } = req.body;
-  for (let user of users) {
-    if (user.username === username && user.password === password) {
-      req.session.login = true;
-      req.session.userId = users.find((user) => user.username === username)?.id;
-      return res.redirect("/profile");
-    }
+  const user = users.find((user) => user.username === username);
+  if (!user || user.password !== password) {
+    return res.status(401).send("Invalid username or password");
   }
-  res.send("plz enter the correct username and password");
+  req.session.userId = user.id;
+  res.redirect("/profile");
 });
 
 app.get("/profile", (req: Request, res: Response) => {
-  const username = users.find(
-    (user) => user.id === req.session.userId,
-  )?.username;
-  if (req.session.login) {
-    return res.send(`welcome, ${username}`);
+  const user = users.find((user) => user.id === req.session.userId);
+  if (!user) {
+    return res.status(401).send("Unauthorized");
   }
-  return res.send("Unauthorized");
+  return res.send(`welcome, ${user.username}`);
 });
 
 app.get("/register", (req: Request, res: Response) => {
