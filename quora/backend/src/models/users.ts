@@ -35,14 +35,6 @@ const userSchema = new Schema<User>(
   },
 );
 
-userSchema.pre("save", async function () {
-  // If password isn't modified, just exit the function early
-  if (!this.isModified("password")) return;
-
-  // Hash the password securely
-  this.password = await bcrypt.hash(this.password, 12);
-});
-
-const User = mongoose.model<Users>("User", userSchema);
+const User = mongoose.model<User>("User", userSchema);
 
 export default User;
