@@ -3,6 +3,7 @@ import Home from "./Home";
 import Edit from "./Edit";
 import New from "./New";
 import Show from "./Show";
+import Login from "./LoginTemp";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/edit" element={<Edit />} />
         <Route path="/new" element={<New />} />
         <Route path="/show" element={<Show />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </BrowserRouter>
   );
