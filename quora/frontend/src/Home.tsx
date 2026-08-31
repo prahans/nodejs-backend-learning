@@ -41,6 +41,7 @@ function Home() {
   return (
     <>
       <h1>Quora Posts</h1>
+      <button onClick={() => navigate("/login")}>login</button>
       {posts?.map((post) => (
         <div className="post" key={post._id}>
           <h3 className="user">@{post.username}</h3>
