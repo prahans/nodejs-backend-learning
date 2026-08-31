@@ -1,17 +1,21 @@
 import express, { type Express, type Request, type Response } from "express";
 import cors from "cors";
 import postRouter from "./routes/postRoutes.ts";
+import authRouter from "./routes/authRouter.ts";
+import cookieParser from "cookie-parser";
 
 import connectDB from "./config/db.ts";
 
 const app: Express = express();
 
+app.use(cookieParser());
 app.use(express.json());
 app.use(cors());
 
 const PORT = 3000;
 
 app.use("/api/posts", postRouter);
+app.use("api/auth", authRouter);
 
 const startServer = async () => {
   try {
