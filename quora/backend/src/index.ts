@@ -25,6 +25,15 @@ app.post("/posts", async (req: Request, res: Response) => {
   res.status(201).json(data);
 });
 
+app.post("/login", async (req: Request, res: Response) => {
+  const { username, password } = req.body;
+  console.log(username, password);
+  // const data = await Post.find();
+  res.status(201).send(`welcome ${username}`);
+  // res.redirect("/");
+  // res.send("hello world")
+});
+
 // Added the forward slash right before :id
 app.delete("/posts/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
