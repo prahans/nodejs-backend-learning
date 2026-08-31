@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express, { type Express, type Request, type Response } from "express";
 import cors from "cors";
 import postRouter from "./routes/postRoutes.ts";
@@ -8,9 +9,15 @@ import connectDB from "./config/db.ts";
 
 const app: Express = express();
 
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    credentials: true,
+  }),
+);
 app.use(cookieParser());
 app.use(express.json());
-app.use(cors());
 
 const PORT = 3000;
 
