@@ -13,15 +13,6 @@ const PORT = 3000;
 
 app.use("/api/posts", postRouter);
 
-app.post("/login", async (req: Request, res: Response) => {
-  const { username, password } = req.body;
-  console.log(username, password);
-  // const data = await Post.find();
-  res.status(201).send(`welcome ${username}`);
-  // res.redirect("/");
-  // res.send("hello world")
-});
-
 const startServer = async () => {
   try {
     // 1. Connect to MongoDB first
