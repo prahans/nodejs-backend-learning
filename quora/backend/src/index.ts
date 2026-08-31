@@ -2,27 +2,27 @@ import "dotenv/config";
 import express, { type Express, type Request, type Response } from "express";
 import cors from "cors";
 import postRouter from "./routes/postRoutes.ts";
-import authRouter from "./routes/authRouter.ts";
+import authRouter from "./routes/authRoutes.ts";
 import cookieParser from "cookie-parser";
 
 import connectDB from "./config/db.ts";
 
 const app: Express = express();
 
+app.use(cookieParser());
+app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   }),
 );
-app.use(cookieParser());
-app.use(express.json());
 
 const PORT = 3000;
 
+app.use("/api/auth", authRouter);
 app.use("/api/posts", postRouter);
-app.use("api/auth", authRouter);
 
 const startServer = async () => {
   try {
