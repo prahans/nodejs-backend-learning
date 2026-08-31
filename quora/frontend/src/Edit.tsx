@@ -31,7 +31,7 @@ function Edit() {
       setIsSubmitting(true);
 
       // 3. Make the POST network request directly to your Express API
-      await axios.put(`http://localhost:3000/posts/${post?._id}`, {
+      await axios.put(`http://localhost:3000/api/posts/${post?._id}`, {
         username: post?.username,
         content: content,
       });

@@ -16,7 +16,7 @@ function Home() {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const res = await axios.get("http://localhost:3000/posts");
+      const res = await axios.get("http://localhost:3000/api/posts");
       setPosts(res.data);
     };
     fetchPosts();
@@ -28,7 +28,7 @@ function Home() {
 
     try {
       // Send the delete request to the backend database
-      await axios.delete(`http://localhost:3000/posts/${id}`);
+      await axios.delete(`http://localhost:3000/api/posts/${id}`);
 
       // 🔥 REFRESH EFFECT: Filter out the deleted post from state.
       // React sees the state change and instantly re-renders the feed!

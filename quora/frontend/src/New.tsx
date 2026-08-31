@@ -23,7 +23,7 @@ function New() {
       setIsSubmitting(true);
 
       // 3. Make the POST network request directly to your Express API
-      await axios.post("http://localhost:3000/posts", {
+      await axios.post("http://localhost:3000/api/posts", {
         username: username,
         content: content,
       });
