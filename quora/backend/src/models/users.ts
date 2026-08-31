@@ -1,32 +1,39 @@
 import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 
-interface Users {
+interface User {
   email: string;
   username: string;
   password: string;
   createdAt: Date;
+  updatedAt: Date; // Added because timestamps are enabled
 }
 
-const userSchema = new Schema<Users>({
-  email: {
-    type: String,
-    required: [true, "Your email address is required"],
-    unique: true,
+const userSchema = new Schema<User>(
+  {
+    email: {
+      type: String,
+      required: [true, "Your email address is required"],
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+    username: {
+      type: String,
+      required: [true, "Your username is required"],
+      unique: true, // Crucial for user accounts
+      trim: true,
+    },
+    password: {
+      type: String,
+      required: [true, "Your password is required"],
+    },
   },
-  username: {
-    type: String,
-    required: [true, "Your username is required"],
+  {
+    // 3. Use Mongoose timestamps instead of hardcoding createdAt
+    timestamps: true,
   },
-  password: {
-    type: String,
-    required: [true, "Your password is required"],
-  },
-  createdAt: {
-    type: Date,
-    default: new Date(),
-  },
-});
+);
 
 userSchema.pre("save", async function () {
   // If password isn't modified, just exit the function early
