@@ -131,13 +131,6 @@ function Signup() {
       >
         Login
       </button>
-
-      <br />
-      <br />
-
-      <button type="button" onClick={() => navigate(-1)} disabled={isSigningUp}>
-        Go back
-      </button>
     </main>
   );
 }

@@ -96,8 +96,12 @@ function Login() {
         </button>
       </form>
 
-      <button type="button" onClick={() => navigate(-1)} disabled={isLoggingIn}>
-        Go back
+      <button
+        type="button"
+        onClick={() => navigate("/signup")}
+        disabled={isLoggingIn}
+      >
+        signup instead
       </button>
     </main>
   );

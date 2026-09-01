@@ -4,6 +4,7 @@ import Edit from "./Edit";
 import New from "./New";
 import Show from "./Show";
 import Login from "./LoginPage";
+import Signup from "./signup";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/new" element={<New />} />
         <Route path="/show" element={<Show />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
       </Routes>
     </BrowserRouter>
   );
