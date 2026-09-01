@@ -4,73 +4,102 @@ import { useNavigate } from "react-router-dom";
 
 function Login() {
   const navigate = useNavigate();
-  // 1. Set up local state to capture input values
-  const [username, setUsername] = useState("");
-  const [password, setpassword] = useState("");
-  const [isLogging, setIsLogging] = useState(false);
 
-  // 2. Handle the submission event asynchronously
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // Prevents HTML from trying to reload/redirect the entire page
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-    if (!username.trim() || !password.trim()) {
-      alert("Please fill out all fields.");
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // Clear previous error
+    setError("");
+
+    // Basic validation
+    if (!email.trim() || !password.trim()) {
+      setError("Please enter your email and password.");
       return;
     }
 
     try {
-      setIsLogging(true);
+      setIsLoggingIn(true);
 
-      // 3. Make the POST network request directly to your Express API
-      await axios.post("http://localhost:3000/login", {
-        username: username,
-        password: password,
-      });
+      const response = await axios.post(
+        "http://localhost:3000/api/auth/login",
+        {
+          email: email.trim(),
+          password,
+        },
+        {
+          withCredentials: true,
+        },
+      );
 
-      // 4. Redirect the user back to the feed page after success
+      console.log(response.data);
+
+      // Login successful
       navigate("/");
     } catch (error) {
-      console.error("incorrect username and password :", error);
-      alert("Failed to login. Check your username and password");
+      console.error("Login failed:", error);
+
+      if (axios.isAxiosError(error)) {
+        setError(error.response?.data?.message || "Invalid email or password.");
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
     } finally {
-      setIsLogging(false);
+      setIsLoggingIn(false);
     }
   };
 
   return (
-    <>
-      {/* Attach the custom submit handler here */}
+    <main>
+      <h1>Login</h1>
+
       <form onSubmit={handleSubmit}>
-        <label htmlFor="username">enter your username</label>
-        <input
-          id="username"
-          name="username"
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <br /> <br />
-        <label htmlFor="password">enter your password</label>
-        <input
-          id="password"
-          name="password"
-          typeof="password"
-          value={password}
-          onChange={(e) => setpassword(e.target.value)}
-        ></input>
-        <br />
-        <button type="submit" disabled={isLogging}>
-          {isLogging ? " Logging..." : "login"}
+        <div>
+          <label htmlFor="email">Email</label>
+
+          <input
+            id="email"
+            name="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your email"
+            autoComplete="email"
+            disabled={isLoggingIn}
+          />
+        </div>
+
+        <div>
+          <label htmlFor="password">Password</label>
+
+          <input
+            id="password"
+            name="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter your password"
+            autoComplete="current-password"
+            disabled={isLoggingIn}
+          />
+        </div>
+
+        {error && <p>{error}</p>}
+
+        <button type="submit" disabled={isLoggingIn}>
+          {isLoggingIn ? "Logging in..." : "Login"}
         </button>
       </form>
 
-      <br></br>
-      <br></br>
-      <br></br>
-      <button onClick={() => navigate(-1)} disabled={isLogging}>
-        go back
+      <button type="button" onClick={() => navigate(-1)} disabled={isLoggingIn}>
+        Go back
       </button>
-    </>
+    </main>
   );
 }
 
