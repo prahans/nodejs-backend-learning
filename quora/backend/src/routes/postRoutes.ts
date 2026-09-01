@@ -1,15 +1,16 @@
 import { Router } from "express";
 import { type Request, type Response } from "express";
 import Post from "../models/posts.ts";
+import { userVerification } from "../middlewares/authMiddleware.ts";
 
 const router = Router();
 
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", userVerification, async (req: Request, res: Response) => {
   const data = await Post.find();
   res.json(data);
 });
 
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", userVerification, async (req: Request, res: Response) => {
   const { username, content } = req.body;
   const data = await Post.create({
     username,
@@ -19,7 +20,7 @@ router.post("/", async (req: Request, res: Response) => {
 });
 
 // Added the forward slash right before :id
-router.delete("/:id", async (req: Request, res: Response) => {
+router.delete("/:id", userVerification, async (req: Request, res: Response) => {
   const { id } = req.params;
   console.log("Deleting post with ID:", id);
 
@@ -42,7 +43,7 @@ router.delete("/:id", async (req: Request, res: Response) => {
 });
 
 // Using PUT or PATCH for modifications (e.g., /posts/:id)
-router.put("/:id", async (req: Request, res: Response) => {
+router.put("/:id", userVerification, async (req: Request, res: Response) => {
   const { id } = req.params;
   const { username, content } = req.body; // Extract fields coming from React
 
