@@ -1,11 +1,11 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, type Document } from "mongoose";
 
-export interface User {
+export interface User extends Document {
   email: string;
   username: string;
   password: string;
   createdAt: Date;
-  updatedAt: Date; // Added because timestamps are enabled
+  updatedAt: Date;
 }
 
 const userSchema = new Schema<User>(
@@ -17,19 +17,20 @@ const userSchema = new Schema<User>(
       lowercase: true,
       trim: true,
     },
+
     username: {
       type: String,
       required: [true, "Your username is required"],
-      unique: true, // Crucial for user accounts
+      unique: true,
       trim: true,
     },
+
     password: {
       type: String,
       required: [true, "Your password is required"],
     },
   },
   {
-    // 3. Use Mongoose timestamps instead of hardcoding createdAt
     timestamps: true,
   },
 );
