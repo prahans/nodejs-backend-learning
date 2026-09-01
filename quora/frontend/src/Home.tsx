@@ -71,6 +71,22 @@ function Home() {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await axios.post(
+        "http://localhost:3000/api/auth/logout",
+        {},
+        {
+          withCredentials: true,
+        },
+      );
+
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
   if (isLoading) {
     return <h2>Loading posts...</h2>;
   }
@@ -87,8 +103,7 @@ function Home() {
   return (
     <>
       <h1>Quora Posts</h1>
-
-      <button onClick={() => navigate("/login")}>Login</button>
+      <button onClick={handleLogout}>Logout</button>
 
       {posts.length === 0 ? (
         <p>No posts available.</p>
