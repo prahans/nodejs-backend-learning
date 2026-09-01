@@ -11,59 +11,122 @@ type Post = {
 function Home() {
   const navigate = useNavigate();
 
-  // 1. Manage the list of posts in local state
   const [posts, setPosts] = useState<Post[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const res = await axios.get("http://localhost:3000/api/posts");
-      setPosts(res.data);
+      try {
+        setIsLoading(true);
+        setError("");
+
+        const response = await axios.get<Post[]>(
+          "http://localhost:3000/api/posts",
+          {
+            withCredentials: true,
+          },
+        );
+
+        setPosts(response.data);
+      } catch (error) {
+        console.error("Failed to fetch posts:", error);
+
+        if (axios.isAxiosError(error)) {
+          setError(error.response?.data?.message || "Failed to load posts.");
+        } else {
+          setError("Something went wrong.");
+        }
+      } finally {
+        setIsLoading(false);
+      }
     };
+
     fetchPosts();
   }, []);
 
-  // 2. The Delete Handler
   const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this post?")) return;
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this post?",
+    );
+
+    if (!confirmed) return;
 
     try {
-      // Send the delete request to the backend database
-      await axios.delete(`http://localhost:3000/api/posts/${id}`);
+      await axios.delete(`http://localhost:3000/api/posts/${id}`, {
+        withCredentials: true,
+      });
 
-      // 🔥 REFRESH EFFECT: Filter out the deleted post from state.
-      // React sees the state change and instantly re-renders the feed!
-      setPosts((prevPosts) => prevPosts.filter((post) => post._id !== id));
+      setPosts((currentPosts) =>
+        currentPosts.filter((post) => post._id !== id),
+      );
     } catch (error) {
       console.error("Failed to delete post:", error);
-      alert("Error deleting post. Make sure your server is online.");
+
+      if (axios.isAxiosError(error)) {
+        alert(error.response?.data?.message || "Failed to delete post.");
+      } else {
+        alert("Something went wrong.");
+      }
     }
   };
+
+  if (isLoading) {
+    return <h2>Loading posts...</h2>;
+  }
+
+  if (error) {
+    return (
+      <>
+        <h2>{error}</h2>
+        <button onClick={() => navigate("/login")}>Go to Login</button>
+      </>
+    );
+  }
+
   return (
     <>
       <h1>Quora Posts</h1>
-      <button onClick={() => navigate("/login")}>login</button>
-      {posts?.map((post) => (
-        <div className="post" key={post._id}>
-          <h3 className="user">@{post.username}</h3>
-          <h3 className="content">{post.content}</h3>
-          <button onClick={() => navigate("/show", { state: { post } })}>
-            see in details
-          </button>
-          <button onClick={() => navigate("/Edit", { state: { post } })}>
-            edit
-          </button>
-          <button
-            onClick={() => handleDelete(post._id)}
-            style={{ color: "red", cursor: "pointer" }}
-          >
-            delete
-          </button>
-        </div>
-      ))}
+
+      <button onClick={() => navigate("/login")}>Login</button>
+
+      {posts.length === 0 ? (
+        <p>No posts available.</p>
+      ) : (
+        posts.map((post) => (
+          <div className="post" key={post._id}>
+            <h3>@{post.username}</h3>
+
+            <p>{post.content}</p>
+
+            <button
+              onClick={() =>
+                navigate("/show", {
+                  state: { post },
+                })
+              }
+            >
+              See details
+            </button>
+
+            <button
+              onClick={() =>
+                navigate("/edit", {
+                  state: { post },
+                })
+              }
+            >
+              Edit
+            </button>
+
+            <button onClick={() => handleDelete(post._id)}>Delete</button>
+          </div>
+        ))
+      )}
+
       <br />
-      <br />
-      <br />
-      <button onClick={() => navigate("/new")}>create a new post</button>
+
+      <button onClick={() => navigate("/new")}>Create a new post</button>
     </>
   );
 }
