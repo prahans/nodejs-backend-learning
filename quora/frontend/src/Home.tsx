@@ -8,12 +8,19 @@ type Post = {
   content: string;
 };
 
+type CurrentUser = {
+  id: string;
+  username: string;
+  email: string;
+};
+
 function Home() {
   const navigate = useNavigate();
 
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -43,6 +50,23 @@ function Home() {
     };
 
     fetchPosts();
+  }, []);
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/api/auth/me", {
+          withCredentials: true,
+        });
+
+        setCurrentUser(response.data.user);
+      } catch (error) {
+        console.error("Failed to get current user:", error);
+        setCurrentUser(null);
+      }
+    };
+
+    fetchCurrentUser();
   }, []);
 
   const handleDelete = async (id: string) => {
