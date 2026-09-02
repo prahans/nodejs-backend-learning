@@ -1,27 +1,59 @@
 import { Router } from "express";
 import { type Request, type Response } from "express";
+
 import Post from "../models/posts.ts";
 import { userVerification } from "../middlewares/authMiddleware.ts";
 
 const router = Router();
 
+// GET ALL POSTS
 router.get("/", userVerification, async (req: Request, res: Response) => {
-  const data = await Post.find();
-  res.json(data);
+  try {
+    const posts = await Post.find();
+
+    res.status(200).json(posts);
+  } catch (error) {
+    console.error("Get posts error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
 });
 
+// CREATE POST
 router.post("/", userVerification, async (req: Request, res: Response) => {
-  const { content } = req.body;
+  try {
+    const { content } = req.body;
 
-  const post = await Post.create({
-    author: req.user!._id,
-    username: req.user!.username,
-    content,
-  });
+    if (!content?.trim()) {
+      res.status(400).json({
+        success: false,
+        message: "Content is required",
+      });
 
-  res.status(201).json(post);
+      return;
+    }
+
+    const post = await Post.create({
+      author: req.user!._id,
+      username: req.user!.username,
+      content: content.trim(),
+    });
+
+    res.status(201).json(post);
+  } catch (error) {
+    console.error("Create post error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
 });
 
+// DELETE POST
 router.delete("/:id", userVerification, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -37,7 +69,6 @@ router.delete("/:id", userVerification, async (req: Request, res: Response) => {
       return;
     }
 
-    // Check ownership
     if (post.author.toString() !== req.user!._id.toString()) {
       res.status(403).json({
         success: false,
@@ -63,7 +94,7 @@ router.delete("/:id", userVerification, async (req: Request, res: Response) => {
   }
 });
 
-// Using PUT or PATCH for modifications (e.g., /posts/:id)
+// UPDATE POST
 router.put("/:id", userVerification, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -80,7 +111,6 @@ router.put("/:id", userVerification, async (req: Request, res: Response) => {
       return;
     }
 
-    // Check ownership
     if (post.author.toString() !== req.user!._id.toString()) {
       res.status(403).json({
         success: false,
