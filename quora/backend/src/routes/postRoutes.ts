@@ -11,12 +11,15 @@ router.get("/", userVerification, async (req: Request, res: Response) => {
 });
 
 router.post("/", userVerification, async (req: Request, res: Response) => {
-  const { username, content } = req.body;
-  const data = await Post.create({
-    username,
+  const { content } = req.body;
+
+  const post = await Post.create({
+    author: req.user!._id,
+    username: req.user!.username,
     content,
   });
-  res.status(201).json(data);
+
+  res.status(201).json(post);
 });
 
 // Added the forward slash right before :id
