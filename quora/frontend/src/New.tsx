@@ -5,34 +5,44 @@ import axios from "axios";
 function New() {
   const navigate = useNavigate();
 
-  // 1. Set up local state to capture input values
-  const [username, setUsername] = useState("");
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
-  // 2. Handle the submission event asynchronously
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // Prevents HTML from trying to reload/redirect the entire page
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-    if (!username.trim() || !content.trim()) {
-      alert("Please fill out all fields.");
+    setError("");
+
+    if (!content.trim()) {
+      setError("Please write something before submitting.");
       return;
     }
 
     try {
       setIsSubmitting(true);
 
-      // 3. Make the POST network request directly to your Express API
-      await axios.post("http://localhost:3000/api/posts", {
-        username: username,
-        content: content,
-      });
+      const response = await axios.post(
+        "http://localhost:3000/api/posts",
+        {
+          content: content.trim(),
+        },
+        {
+          withCredentials: true,
+        },
+      );
 
-      // 4. Redirect the user back to the feed page after success
+      console.log("Post created:", response.data);
+
       navigate("/");
     } catch (error) {
       console.error("Error creating post:", error);
-      alert("Failed to submit post. Check if your server is running.");
+
+      if (axios.isAxiosError(error)) {
+        setError(error.response?.data?.message || "Failed to create post.");
+      } else {
+        setError("Something went wrong.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -40,30 +50,34 @@ function New() {
 
   return (
     <>
-      {/* Attach the custom submit handler here */}
+      <h1>Create a new post</h1>
+
       <form onSubmit={handleSubmit}>
-        <input
-          placeholder="enter username"
-          name="username"
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <br /> <br />
         <textarea
-          placeholder="write your post"
           name="content"
+          placeholder="Write your post..."
           value={content}
           onChange={(e) => setContent(e.target.value)}
-        ></textarea>
+          disabled={isSubmitting}
+        />
+
+        {error && <p>{error}</p>}
+
         <br />
+
         <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "submitting..." : "submit post"}
+          {isSubmitting ? "Submitting..." : "Submit post"}
         </button>
       </form>
 
-      <button onClick={() => navigate(-1)} disabled={isSubmitting}>
-        go back
+      <br />
+
+      <button
+        type="button"
+        onClick={() => navigate(-1)}
+        disabled={isSubmitting}
+      >
+        Go back
       </button>
     </>
   );

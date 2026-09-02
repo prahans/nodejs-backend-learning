@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 type Post = {
   _id: string;
+  author: string;
   username: string;
   content: string;
 };
@@ -127,7 +128,17 @@ function Home() {
   return (
     <>
       <h1>Quora Posts</h1>
-      <button onClick={handleLogout}>Logout</button>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          justifyContent: "flex-end",
+        }}
+      >
+        <h3>{currentUser?.username}</h3>
+        <button onClick={handleLogout}>Logout</button>
+      </div>
 
       {posts.length === 0 ? (
         <p>No posts available.</p>
@@ -148,23 +159,34 @@ function Home() {
               See details
             </button>
 
-            <button
-              onClick={() =>
-                navigate("/edit", {
-                  state: { post },
-                })
-              }
-            >
-              Edit
-            </button>
-
-            <button onClick={() => handleDelete(post._id)}>Delete</button>
+            {currentUser?.id === post.author && (
+              <>
+                <button
+                  onClick={() =>
+                    navigate("/edit", {
+                      state: { post },
+                    })
+                  }
+                >
+                  Edit
+                </button>
+                <button onClick={() => handleDelete(post._id)}>Delete</button>
+              </>
+            )}
           </div>
         ))
       )}
 
       <br />
-      <button onClick={() => navigate("/new")}>Create a new post</button>
+      <button
+        onClick={() =>
+          navigate("/new", {
+            state: { username: currentUser?.username || "" },
+          })
+        }
+      >
+        Create a new post
+      </button>
     </>
   );
 }

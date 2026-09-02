@@ -16,8 +16,8 @@ function Show() {
       <h2>see in details</h2>
       <p>post id : {post?._id}</p>
       <div className="post">
-        <h3>{post?.username}</h3>
-        <h4>{post?.content}</h4>
+        <h3 style={{ fontStyle: "italic" }}>@{post?.username}</h3>
+        <p>{post?.content}</p>
       </div>
       <button onClick={() => navigate(-1)}>go back</button>
     </>
