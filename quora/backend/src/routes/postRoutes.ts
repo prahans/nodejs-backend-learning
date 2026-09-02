@@ -22,26 +22,44 @@ router.post("/", userVerification, async (req: Request, res: Response) => {
   res.status(201).json(post);
 });
 
-// Added the forward slash right before :id
 router.delete("/:id", userVerification, async (req: Request, res: Response) => {
-  const { id } = req.params;
-  console.log("Deleting post with ID:", id);
-
   try {
-    // 1. Delete the document from your MongoDB cluster via Mongoose
-    const deletedPost = await Post.findByIdAndDelete(id);
+    const { id } = req.params;
 
-    // 2. Check if the post actually existed
-    if (!deletedPost) {
-      res.status(404).json({ message: "Post not found" });
+    const post = await Post.findById(id);
+
+    if (!post) {
+      res.status(404).json({
+        success: false,
+        message: "Post not found",
+      });
+
       return;
     }
 
-    // 3. Return a successful 200 code along with the deleted object back to React
-    res.status(200).json(deletedPost);
+    // Check ownership
+    if (post.author.toString() !== req.user!._id.toString()) {
+      res.status(403).json({
+        success: false,
+        message: "You are not allowed to delete this post",
+      });
+
+      return;
+    }
+
+    await Post.findByIdAndDelete(id);
+
+    res.status(200).json({
+      success: true,
+      message: "Post deleted successfully",
+    });
   } catch (error) {
-    console.error("Database deletion error:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Delete post error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 });
 
