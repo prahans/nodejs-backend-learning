@@ -10,6 +10,7 @@ type PostProps = {
 
 function Edit() {
   const location = useLocation();
+
   // Cast the state to your custom type safely
   const state = location.state as { post: PostProps } | null;
   const post = state?.post;
@@ -26,7 +27,7 @@ function Edit() {
       alert("Please fill out all fields.");
       return;
     }
-
+    
     try {
       setIsSubmitting(true);
 

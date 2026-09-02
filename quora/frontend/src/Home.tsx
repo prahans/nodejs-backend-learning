@@ -140,7 +140,6 @@ function Home() {
       )}
 
       <br />
-
       <button onClick={() => navigate("/new")}>Create a new post</button>
     </>
   );
