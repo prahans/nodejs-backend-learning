@@ -65,32 +65,47 @@ router.delete("/:id", userVerification, async (req: Request, res: Response) => {
 
 // Using PUT or PATCH for modifications (e.g., /posts/:id)
 router.put("/:id", userVerification, async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { username, content } = req.body; // Extract fields coming from React
-
-  console.log("Updating post with ID:", id);
-
   try {
-    // 1. Update the document.
-    // { new: true } returns the fresh, updated object back instead of the old one.
-    // { runValidators: true } ensures the new updates follow your Mongoose schema rules.
-    const updatedPost = await Post.findByIdAndUpdate(
-      id,
-      { username, content },
-      { new: true, runValidators: true },
-    );
+    const { id } = req.params;
+    const { content } = req.body;
 
-    // 2. Check if the post existed
-    if (!updatedPost) {
-      res.status(404).json({ message: "Post not found" });
+    const post = await Post.findById(id);
+
+    if (!post) {
+      res.status(404).json({
+        success: false,
+        message: "Post not found",
+      });
+
       return;
     }
 
-    // 3. Send the updated post back to React so it can refresh the UI state
-    res.status(200).json(updatedPost);
+    // Check ownership
+    if (post.author.toString() !== req.user!._id.toString()) {
+      res.status(403).json({
+        success: false,
+        message: "You are not allowed to edit this post",
+      });
+
+      return;
+    }
+
+    post.content = content;
+
+    const updatedPost = await post.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Post updated successfully",
+      post: updatedPost,
+    });
   } catch (error) {
-    console.error("Database update error:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Update post error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 });
 
