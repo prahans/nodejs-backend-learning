@@ -1,21 +1,38 @@
 import mongoose, { Schema } from "mongoose";
 
-interface Posts {
+interface Post {
+  author: mongoose.Types.ObjectId;
   username: string;
   content: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-const userSchema = new Schema<Posts>({
-  username: {
-    type: String,
-    required: true,
-  },
-  content: {
-    type: String,
-    required: true,
-  },
-});
+const postSchema = new Schema<Post>(
+  {
+    author: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
 
-const Post = mongoose.model<Posts>("Post", userSchema);
+    username: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    content: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
+const Post = mongoose.model<Post>("Post", postSchema);
 
 export default Post;
