@@ -1,8 +1,9 @@
+import "dotenv/config";
 import mongoose from "mongoose";
 
 const connectDB = async (): Promise<void> => {
   try {
-    await mongoose.connect("mongodb://127.0.0.1:27017/quora");
+    await mongoose.connect(process.env.MONGO_URL as string);
 
     console.log("MongoDB connected successfully");
   } catch (error) {
