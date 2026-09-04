@@ -11,7 +11,6 @@ This repository documents my journey of learning backend development with Node.j
 - Authentication & Authorization
 - Error Handling
 - File Uploads
-- Testing
 - Deployment
 
 ## Tech Stack
@@ -20,9 +19,7 @@ This repository documents my journey of learning backend development with Node.j
 - Express.js
 - JavaScript
 - MongoDB
-- PostgreSQL
 - Mongoose
-- Prisma
 - JWT
 - bcrypt
 - REST API
@@ -35,13 +32,11 @@ Each folder represents a topic or section from the course.
 
 - [x] Introduction
 - [x] Node Fundamentals
-- [ ] Express.js
-- [ ] REST API
-- [ ] Authentication
-- [ ] MongoDB
-- [ ] PostgreSQL
-- [ ] Testing
-- [ ] Deployment
+- [x] Express.js
+- [x] REST API
+- [x] Authentication
+- [x] MongoDB
+- [x] Deployment
 
 ## Notes
 
